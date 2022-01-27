@@ -4,7 +4,7 @@
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 
-## A Runtime method override decorator which should behave like a compiled language
+## A Runtime method overload decorator which should behave like a compiled language
 - there is a `override` decorator from `typing` which works only for static type checking
 - this decorator works on `runtime`
 
