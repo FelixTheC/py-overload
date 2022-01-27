@@ -17,9 +17,9 @@ README = (HERE / "README.md").read_text()
 packages = find_packages(exclude=["test_*", "*.tests"])
 
 setup(
-    name="override",
+    name="overload",
     version="0.1.0",
-    description="A Runtime method override decorator.",
+    description="A Runtime method overload decorator.",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/FelixTheC/override.git",
@@ -30,6 +30,8 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.9",
     ],
+    install_requires=["strongtyping"],
+    dependencies="",
     packages=packages,
     python_requires=">=3.9",
     include_package_data=True,

@@ -1,4 +1,4 @@
-# override
+# pyoverload
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
@@ -13,31 +13,31 @@
 ```python
 from typing import List
 
-from override.class_tools import override
+from pyoverload.class_tools import overload
 
 
 class Example:
-    @override
+    @overload
     def my_func(self):
         return 0
 
-    @override
+    @overload
     def my_func(self, a: int, b: int):
         return a * b
 
-    @override
+    @overload
     def my_func(self, a: int, b: int, c: int):
         return a * b * c
 
-    @override
+    @overload
     def my_func(self, *, val: int, other_val: int):
         return val, other_val
 
-    @override
+    @overload
     def my_func(self, val: List[int], other_val, /):
         return [other_val * v for v in val]
 
-    @override
+    @overload
     def my_func(self, val: List[str], other_val, /):
         return val, other_val
 

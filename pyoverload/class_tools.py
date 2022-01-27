@@ -123,7 +123,7 @@ def find_corresponding_func(func_name, args, kwargs):
             return info.func_
 
 
-def override(func):
+def overload(func):
     func_info = FuncInfo(func, generate_parameter_infos(func))
     __override_items__.append(func_info)
 

@@ -6,43 +6,43 @@
 """
 from typing import List
 
-from override.class_tools import override
+from pyoverload.class_tools import overload
 
 
 class Example:
-    @override
+    @overload
     def other_func(self):
         return 0
 
-    @override
+    @overload
     def other_func(self, a: int, b: int):
         return (a + b) * (a + b)
 
-    @override
+    @overload
     def my_func(self):
         return 0
 
-    @override
+    @overload
     def my_func(self, a: int, b: str):
         return b * a
 
-    @override
+    @overload
     def my_func(self, a: int, b: int):
         return a * b
 
-    @override
+    @overload
     def my_func(self, a: int, b: int, c: int):
         return a * b * c
 
-    @override
+    @overload
     def my_func(self, *, val: int, other_val: int):
         return val, other_val
 
-    @override
+    @overload
     def my_func(self, val: List[int], other_val, /):
         return [other_val * v for v in val]
 
-    @override
+    @overload
     def my_func(self, val: List[str], other_val, /):
         return val, other_val
 
