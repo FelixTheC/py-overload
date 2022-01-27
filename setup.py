@@ -17,8 +17,8 @@ README = (HERE / "README.md").read_text()
 packages = find_packages(exclude=["test_*", "*.tests"])
 
 setup(
-    name="pyoverload",
-    version="0.1.0",
+    name="strongtyping-pyoverload",
+    version="0.1.1",
     description="A Runtime method overload decorator.",
     long_description=README,
     long_description_content_type="text/markdown",

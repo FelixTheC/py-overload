@@ -6,7 +6,7 @@
 """
 from typing import List
 
-from pyoverload.class_tools import overload
+from strongtyping_pyoverload import overload
 
 
 class Example:
