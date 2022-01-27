@@ -177,19 +177,17 @@ class Other:
 
     @overload
     def other_func(self, a, b):
-        return ((a * a) / b) + a
+        return (a * a) / b
 
     @overload
     def other_func(self, a, b, c):
         return a + b + c
 
 >> > other = Other()
->> > other.other_func()
-0
 >> > other.other_func(2)
 6
 >> > other.other_func(2, 3)
-3.333333333333333
+1.333333333333333
 >> > other.other_func(2, 3, 4)
 9
 ```
