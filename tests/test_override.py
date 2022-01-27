@@ -59,10 +59,10 @@ def test_with_kwargs():
     example = Example()
     assert example.my_func(other_val=10, val=2) == 1024
     assert example.my_func(2, b=3) == 6
-    assert example.my_func(c=2, b=3, a=4) == 24
+    assert example.my_func(2, c=3, b=4) == 24
 
 
 def test_with_pos_only():
     example = Example()
     assert example.my_func([1, 2, 3], 2) == [2, 4, 6]
-    assert example.my_func([.1, .892, 3.1456], 2) == 2.0688
+    assert example.my_func([0.1, 0.892, 3.1456], 2) == 2.0688

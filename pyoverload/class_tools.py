@@ -5,23 +5,24 @@
 @author: felix
 """
 import inspect
-from functools import WRAPPER_ASSIGNMENTS
+from collections import defaultdict
 from functools import wraps
 from types import MethodType
 
-from strongtyping.strong_typing_utils import TypeMisMatch, check_type
+from strongtyping.strong_typing_utils import check_type
 
 __override_items__ = []
 ANY = object()
 
 
 class FuncInfo:
-    __slots__ = ("func_", "params_", "func_name_")
+    __slots__ = ("func_", "params_", "func_name_", "cls_name_")
 
     def __init__(self, func_, params_: list):
         self.func_ = func_
         self.func_name_ = func_.__name__
         self.params_ = params_
+        self.cls_name_ = str(func_).split(" ")[1].split(".")[0]
 
     @property
     def name(self):
@@ -91,7 +92,11 @@ class FuncInfo:
 def generate_parameter_infos(func: MethodType):
     params = inspect.signature(func).parameters
     annotations = func.__annotations__
-    func_params = {val.name: (str(ANY), val.kind.name, val.name) for key, val in params.items() if val.name != "self"}
+    func_params = {
+        val.name: (str(ANY), val.kind.name, val.name)
+        for key, val in params.items()
+        if val.name != "self"
+    }
     for key, val in annotations.items():
         if elem := func_params.get(key):
             func_params[key] = (val, elem[1], elem[2])
@@ -99,12 +104,22 @@ def generate_parameter_infos(func: MethodType):
 
 
 def generate_docstring(func_name: str):
-    return "\n".join(obj.func_.__doc__ for obj in __override_items__ if obj.name == func_name and obj.func_.__doc__)
+    return "\n".join(
+        obj.func_.__doc__
+        for obj in __override_items__
+        if obj.name == func_name and obj.func_.__doc__
+    )
 
 
-def find_corresponding_func(func_name, args, kwargs):
+def find_corresponding_func(func_name, cls_name, args, kwargs):
     pos_or_kwarg_funcs = []
-    for info in [obj for obj in __override_items__ if obj.name == func_name]:
+    data = defaultdict(list)
+    for obj in __override_items__:
+        if obj.name == func_name:
+            data[obj.cls_name_].append(obj)
+    subclass = data.pop(cls_name, [])
+    [subclass.extend(obj) for obj in list(data.values())]
+    for info in subclass:
         if info.is_keyword_only:
             if info == kwargs:
                 return info.func_
@@ -126,7 +141,9 @@ def overload(func):
 
     @wraps(func)
     def inner(cls_, *args, **kwargs):
-        required_function = find_corresponding_func(func.__name__, args, kwargs)
+        required_function = find_corresponding_func(
+            func.__name__, cls_.__class__.__name__, args, kwargs
+        )
         try:
             return required_function(cls_, *args, **kwargs)
         except (KeyError, TypeError):
