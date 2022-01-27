@@ -164,7 +164,36 @@ hello_world
 6
 ```
 - or have a __different length__ for your parameters
+ 
+```python
+from strongtyping_pyoverload import overload
 
+
+class Other:
+
+    @overload
+    def other_func(self, a):
+        return a ** a + a
+
+    @overload
+    def other_func(self, a, b):
+        return ((a * a) / b) + a
+
+    @overload
+    def other_func(self, a, b, c):
+        return a + b + c
+
+>> > other = Other()
+>> > other.other_func()
+0
+>> > other.other_func(2)
+6
+>> > other.other_func(2, 3)
+3.333333333333333
+>> > other.other_func(2, 3, 4)
+9
+```
+- subclasses can overwrite an existing function but these must match the exact type definition
 ```python
 from strongtyping_pyoverload import overload
 
@@ -189,10 +218,6 @@ class Other:
     def other_func(self, a: int, b: int):
         return ((a * a) / b) + a
 
-    @overload
-    def other_func(self, a, b, c):
-        return a + b + c
-
 >> > other = Other()
 >> > other.other_func()
 0
@@ -200,8 +225,6 @@ class Other:
 6
 >> > other.other_func(2, 3)
 3.333333333333333
->> > other.other_func(2, 3, 4)
-9
 ```
 
 ### Installation
