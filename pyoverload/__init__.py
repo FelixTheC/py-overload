@@ -4,4 +4,4 @@
 @created: 24.01.22
 @author: felix
 """
-from .class_tools import override
+from .class_tools import overload
