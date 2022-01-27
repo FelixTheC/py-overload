@@ -11,7 +11,12 @@
 - there is a `override` decorator from `typing` which works only for static type checking
 - this decorator works on `runtime`
 
-### Example
+## Install
+```shell
+pip install strongtyping-pyoverload
+```
+
+## Examples
 
 ```python
 from typing import List
