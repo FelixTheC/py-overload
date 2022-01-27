@@ -36,15 +36,15 @@ class Example:
 
     @overload
     def my_func(self, *, val: int, other_val: int):
-        return val, other_val
+        return val ** other_val
 
     @overload
     def my_func(self, val: List[int], other_val, /):
         return [other_val * v for v in val]
 
     @overload
-    def my_func(self, val: List[str], other_val, /):
-        return val, other_val
+    def my_func(self, val: List[float], other_val, /):
+        return sum(val) / other_val
 
 
 def test_with_simple_args():
@@ -56,4 +56,13 @@ def test_with_simple_args():
 
 
 def test_with_kwargs():
-    pass
+    example = Example()
+    assert example.my_func(other_val=10, val=2) == 1024
+    assert example.my_func(2, b=3) == 6
+    assert example.my_func(c=2, b=3, a=4) == 24
+
+
+def test_with_pos_only():
+    example = Example()
+    assert example.my_func([1, 2, 3], 2) == [2, 4, 6]
+    assert example.my_func([.1, .892, 3.1456], 2) == 2.0688
