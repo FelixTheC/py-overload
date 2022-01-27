@@ -5,6 +5,7 @@
 @author: felix
 """
 import inspect
+from functools import WRAPPER_ASSIGNMENTS
 from functools import wraps
 from types import MethodType
 
@@ -53,9 +54,7 @@ class FuncInfo:
             for param in self.params_:
                 if obj := other.get(param[2]):
                     if param[0] != str(ANY):
-                        try:
-                            check_type(obj, param[0])
-                        except TypeMisMatch:
+                        if not check_type(obj, param[0]):
                             return False
                 else:
                     return False
@@ -65,9 +64,7 @@ class FuncInfo:
                 return False
             for param, arg in zip(self.params_, other):
                 if param[0] != str(ANY):
-                    try:
-                        check_type(arg, param[0])
-                    except TypeMisMatch:
+                    if not check_type(arg, param[0]):
                         return False
             return True
         else:
@@ -80,17 +77,13 @@ class FuncInfo:
             for param in self.params_:
                 if obj := kwargs_.get(param[2]):
                     if param[0] != str(ANY):
-                        try:
-                            check_type(obj, param[0])
-                        except TypeMisMatch:
+                        if not check_type(obj, param[0]):
                             return False
                 else:
                     pos_args.append(param)
             for arg, param in zip(args_, pos_args):
                 if param[0] != str(ANY):
-                    try:
-                        check_type(arg, param[0])
-                    except TypeMisMatch:
+                    if not check_type(arg, param[0]):
                         return False
             return True
 
@@ -98,11 +91,15 @@ class FuncInfo:
 def generate_parameter_infos(func: MethodType):
     params = inspect.signature(func).parameters
     annotations = func.__annotations__
-    if annotations:
-        return [(val, params[key].kind.name, params[key].name) for key, val in annotations.items()]
-    return [
-        (str(ANY), val.kind.name, val.name) for key, val in params.items() if val.name != "self"
-    ]
+    func_params = {val.name: (str(ANY), val.kind.name, val.name) for key, val in params.items() if val.name != "self"}
+    for key, val in annotations.items():
+        if elem := func_params.get(key):
+            func_params[key] = (val, elem[1], elem[2])
+    return func_params.values()
+
+
+def generate_docstring(func_name: str):
+    return "\n".join(obj.func_.__doc__ for obj in __override_items__ if obj.name == func_name and obj.func_.__doc__)
 
 
 def find_corresponding_func(func_name, args, kwargs):
@@ -137,4 +134,5 @@ def override(func):
                 f"{cls_.__class__.__name__} has no function which matches with your parameters {args} {kwargs}"
             )
 
+    inner.__doc__ = generate_docstring(func.__name__)
     return inner
