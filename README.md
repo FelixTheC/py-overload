@@ -11,6 +11,7 @@
 - there is a `override` decorator from `typing` which works only for static type checking
 - this decorator works on `runtime`
 
+
 ## Install
 ```shell
 pip install strongtyping-pyoverload
@@ -160,10 +161,11 @@ class Other:
     def other_func(self, a: list, b):
         return len(a) * b
 
->> > other = Other()
->> > other.other_func("Hello", "World")
+
+>>> other = Other()
+>>> other.other_func("Hello", "World")
 hello_world
->> > other.other_func(2, 2)
+>>> other.other_func(2, 2)
 16
 >> > other.other_func([1, 2, 3], 2)
 6
@@ -188,12 +190,13 @@ class Other:
     def other_func(self, a, b, c):
         return a + b + c
 
->> > other = Other()
->> > other.other_func(2)
+
+>>> other = Other()
+>>> other.other_func(2)
 6
->> > other.other_func(2, 3)
+>>> other.other_func(2, 3)
 1.333333333333333
->> > other.other_func(2, 3, 4)
+>>> other.other_func(2, 3, 4)
 9
 ```
 - subclasses can overwrite an existing function but these must match the exact type definition
@@ -211,7 +214,7 @@ class Example:
         return (a * a) / b
 
 
-class Other:
+class Other(Example):
 
     @overload
     def other_func(self, a):
@@ -221,14 +224,35 @@ class Other:
     def other_func(self, a: int, b: int):
         return ((a * a) / b) + a
 
->> > other = Other()
->> > other.other_func()
+
+>>> other = Other()
+>>> other.other_func()
 0
->> > other.other_func(2)
+>>> other.other_func(2)
 6
->> > other.other_func(2, 3)
+>>> other.other_func(2, 3)
 3.333333333333333
 ```
+
+### What happens when no function matches
+- when no function matches with the parameter you're using then an `AttributError` will be raised
+```python
+from strongtyping_pyoverload import overload
+
+
+class Example:
+    @overload
+    def other_func(self, a: int, b: int):
+        return (a + b) * (a + b)
+
+    
+>>> example = Example()
+>>> example.other_func("Not", "Supported")
+Traceback (most recent call last):
+...
+AttributeError: Example has no function which matches with your parameters ("Not", "Supported") {}
+```
+
 
 ### Installation
 - pip install strongtyping-pyoverload
