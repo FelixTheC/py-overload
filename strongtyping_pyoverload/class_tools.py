@@ -156,4 +156,4 @@ def overload(func):
             )
 
     inner.__doc__ = generate_docstring(func.__name__)
-    return lru_cache(inner)
+    return inner
