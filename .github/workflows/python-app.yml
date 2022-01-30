@@ -22,9 +22,9 @@ jobs:
           pip install flake8 pytest pytest-cov isort black
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Check with isort
-        run: isort . --check-only
+        run: isort strongtyping_pyoverload/ --check-only
       - name: Lint with black
-        run: python -m black . --check
+        run: python -m black strongtyping_pyoverload/ --check
       - name: Test with pytest
         run: |
           pytest tests --cov=pyoverload
