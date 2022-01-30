@@ -6,6 +6,7 @@
 """
 import inspect
 from collections import defaultdict
+from functools import lru_cache
 from functools import wraps
 from types import MethodType
 
@@ -22,7 +23,11 @@ class FuncInfo:
         self.func_ = func_
         self.func_name_ = func_.__name__
         self.params_ = params_
-        self.cls_name_ = str(func_).split(" ")[1].split(".")[0]
+        self.cls_name_ = self.extract_class_name_from_func(str(func_))
+
+    def extract_class_name_from_func(self, function_str: str):
+        function_mro = function_str[: function_str.rfind(" at")]
+        return function_mro.split(".")[-2]
 
     @property
     def name(self):
@@ -152,4 +157,4 @@ def overload(func):
             )
 
     inner.__doc__ = generate_docstring(func.__name__)
-    return inner
+    return lru_cache(inner)
