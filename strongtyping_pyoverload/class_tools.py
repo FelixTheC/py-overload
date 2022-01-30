@@ -6,8 +6,7 @@
 """
 import inspect
 from collections import defaultdict
-from functools import lru_cache
-from functools import wraps
+from functools import lru_cache, wraps
 from types import MethodType
 
 from strongtyping.strong_typing_utils import check_type
