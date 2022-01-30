@@ -6,6 +6,8 @@
 """
 from typing import List
 
+import pytest
+
 from strongtyping_pyoverload import overload
 
 
@@ -66,3 +68,37 @@ def test_with_pos_only():
     example = Example()
     assert example.my_func([1, 2, 3], 2) == [2, 4, 6]
     assert example.my_func([0.1, 0.892, 3.1456], 2) == 2.0688
+
+
+def test_not_existing_option_raises_default_exception():
+    class Other:
+        pass
+
+    other = Other()
+
+    with pytest.raises(AttributeError):
+        other.missing_function()
+
+    example = Example()
+    with pytest.raises(AttributeError):
+        example.my_func("Not", "Supported")
+
+
+def test_inheritance_works_like_expected():
+    class Base:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+    class Child(Base):
+        @overload
+        def other_func(self, a: int, b: int):
+            return ((a + b) * (a + b)) / (a ** 2)
+
+    base = Base()
+    base_result = base.other_func(3, 5)
+
+    child = Child()
+    child_result = child.other_func(3, 5)
+
+    assert base_result != child_result
