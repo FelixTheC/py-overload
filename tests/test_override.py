@@ -4,11 +4,14 @@
 @created: 24.01.22
 @author: felix
 """
+import time
+from collections import UserDict
 from typing import List
 
 import pytest
 
-from strongtyping_pyoverload import overload
+import strongtyping_pyoverload
+from strongtyping_pyoverload.class_tools import overload
 
 
 class Example:
@@ -102,3 +105,8 @@ def test_inheritance_works_like_expected():
     child_result = child.other_func(3, 5)
 
     assert base_result != child_result
+
+
+def test_caching_works_pure():
+    example = Example()
+    assert all(example.my_func(other_val=10, val=2) == 1024 for _ in range(1024))
