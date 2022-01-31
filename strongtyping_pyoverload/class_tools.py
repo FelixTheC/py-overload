@@ -6,10 +6,11 @@
 """
 import inspect
 from collections import defaultdict
-from functools import lru_cache, wraps
+from functools import wraps
 from types import MethodType
 
 from strongtyping.strong_typing_utils import check_type
+from strongtyping.cached_dict import CachedDict
 
 __override_items__ = []
 ANY = object()
@@ -142,14 +143,20 @@ def find_corresponding_func(func_name, cls_name, args, kwargs):
 def overload(func):
     func_info = FuncInfo(func, generate_parameter_infos(func))
     __override_items__.append(func_info)
+    cached_dict = CachedDict()
 
     @wraps(func)
     def inner(cls_, *args, **kwargs):
+        cached_key = f'{func.__name__}_{cls_.__class__.__name__}_{args}_{kwargs}'
+        if cached_result := cached_dict.get(cached_key):
+            return cached_result
         required_function = find_corresponding_func(
             func.__name__, cls_.__class__.__name__, args, kwargs
         )
         try:
-            return required_function(cls_, *args, **kwargs)
+            result = required_function(cls_, *args, **kwargs)
+            cached_dict[cached_key] = result
+            return result
         except (KeyError, TypeError):
             raise AttributeError(
                 f"{cls_.__class__.__name__} has no function which matches with your parameters {args} {kwargs}"
