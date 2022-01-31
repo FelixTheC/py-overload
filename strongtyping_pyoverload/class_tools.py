@@ -9,8 +9,8 @@ from collections import defaultdict
 from functools import wraps
 from types import MethodType
 
-from strongtyping.strong_typing_utils import check_type
 from strongtyping.cached_dict import CachedDict
+from strongtyping.strong_typing_utils import check_type
 
 __override_items__ = []
 ANY = object()
@@ -147,7 +147,7 @@ def overload(func):
 
     @wraps(func)
     def inner(cls_, *args, **kwargs):
-        cached_key = f'{func.__name__}_{cls_.__class__.__name__}_{args}_{kwargs}'
+        cached_key = f"{func.__name__}_{cls_.__class__.__name__}_{args}_{kwargs}"
         if cached_result := cached_dict.get(cached_key):
             return cached_result
         required_function = find_corresponding_func(
