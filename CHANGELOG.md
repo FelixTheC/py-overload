@@ -1,5 +1,6 @@
-## unreleased
+## 0.2.0
 - add caching
+- support pure functions
 
 ## 0.1.2
 - add missing test for Inheritance
