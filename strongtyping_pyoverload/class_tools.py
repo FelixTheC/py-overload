@@ -25,9 +25,13 @@ class FuncInfo:
         self.params_ = params_
         self.cls_name_ = self.extract_class_name_from_func(str(func_))
 
-    def extract_class_name_from_func(self, function_str: str):
+    @staticmethod
+    def extract_class_name_from_func(function_str: str):
         function_mro = function_str[: function_str.rfind(" at")]
-        return function_mro.split(".")[-2]
+        try:
+            return function_mro.split(".")[-2]
+        except IndexError:
+            return ""
 
     @property
     def name(self):
@@ -140,21 +144,39 @@ def find_corresponding_func(func_name, cls_name, args, kwargs):
             return info.func_
 
 
+def is_module(func_, cls_):
+    return cls_.__class__.__name__ in func_.__qualname__
+
+
 def overload(func):
     func_info = FuncInfo(func, generate_parameter_infos(func))
     __override_items__.append(func_info)
     cached_dict = CachedDict()
 
     @wraps(func)
-    def inner(cls_, *args, **kwargs):
-        cached_key = f"{func.__name__}_{cls_.__class__.__name__}_{args}_{kwargs}"
+    def inner(cls_=None, *args, **kwargs):
+        is_module_function = is_module(func, cls_) if cls_ is not None else False
+        func_class_name = FuncInfo.extract_class_name_from_func(str(func))
+        if is_module_function:
+            cached_key = f"{func.__name__}_{func_class_name}_{args}_{kwargs}"
+        else:
+            cached_key = f"{func.__name__}_{func_class_name}_{(cls_, *args)}_{kwargs}"
         if cached_result := cached_dict.get(cached_key):
             return cached_result
-        required_function = find_corresponding_func(
-            func.__name__, cls_.__class__.__name__, args, kwargs
-        )
+
+        if is_module_function or cls_ is None:
+            required_function = find_corresponding_func(
+                func.__name__, func_class_name, args, kwargs
+            )
+        else:
+            required_function = find_corresponding_func(
+                func.__name__, func_class_name, (cls_, *args), kwargs
+            )
         try:
-            result = required_function(cls_, *args, **kwargs)
+            if cls_ is None:
+                result = required_function(*args, **kwargs)
+            else:
+                result = required_function(cls_, *args, **kwargs)
             cached_dict[cached_key] = result
             return result
         except (KeyError, TypeError):

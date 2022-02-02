@@ -4,14 +4,11 @@
 @created: 24.01.22
 @author: felix
 """
-import time
-from collections import UserDict
 from typing import List
 
 import pytest
 
-import strongtyping_pyoverload
-from strongtyping_pyoverload.class_tools import overload
+from strongtyping_pyoverload import overload
 
 
 class Example:
@@ -26,6 +23,10 @@ class Example:
     @overload
     def my_func(self):
         return 0
+
+    @overload
+    def my_func(self, a: str, b: str):
+        return b + a
 
     @overload
     def my_func(self, a: int, b: str):
@@ -58,6 +59,7 @@ def test_with_simple_args():
     assert example.my_func(2, "3") == "33"
     assert example.my_func() == 0
     assert example.my_func(2, 3, 4) == 24
+    assert example.my_func("world", "hello") == "helloworld"
 
 
 def test_with_kwargs():
@@ -84,7 +86,7 @@ def test_not_existing_option_raises_default_exception():
 
     example = Example()
     with pytest.raises(AttributeError):
-        example.my_func("Not", "Supported")
+        example.my_func("This", "Not", "Supported")
 
 
 def test_inheritance_works_like_expected():
@@ -110,3 +112,27 @@ def test_inheritance_works_like_expected():
 def test_caching_works_pure():
     example = Example()
     assert all(example.my_func(other_val=10, val=2) == 1024 for _ in range(1024))
+
+
+def test_works_for_normal_functions():
+
+    @overload
+    def my_func(a: int, b: int):
+        return a * b
+
+    @overload
+    def my_func(a: int, b: int, c: int):
+        return a * b * c
+
+    assert my_func(2, 3) == 6
+    assert my_func(2, 3, 4) == 24
+
+
+def test_on_module_level():
+    from .module_based_test_file import module_func
+
+    assert module_func() == 0
+    assert module_func(1, 2) == 1
+    assert module_func("1", "2") == 2
+    assert module_func(1, "2") == 3
+    assert module_func(b=10, a=20) == 1
