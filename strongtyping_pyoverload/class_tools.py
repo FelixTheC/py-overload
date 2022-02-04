@@ -30,7 +30,7 @@ class FuncInfo:
 
     @staticmethod
     def extract_class_name_from_func(function_str: str):
-        function_mro = function_str[START_IDX: function_str.rfind(" at")]
+        function_mro = function_str[START_IDX : function_str.rfind(" at")]
         try:
             return function_mro.split(".")[-2]
         except IndexError:
