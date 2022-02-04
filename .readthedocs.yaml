@@ -9,13 +9,17 @@ mkdocs:
   configuration: mkdocs.yml
   fail_on_warning: false
 
+build:
+  os: ubuntu-20.04
+  tools:
+    python: "3.9"
+
 formats:
   - epub
   - pdf
 
 # Optionally set the version of Python and requirements required to build your docs
 python:
-  version: "3.9"
   install:
     - requirements: docs/requirements.txt
     - method: pip
