@@ -5,6 +5,7 @@
 @author: felix
 """
 import inspect
+import pprint
 from collections import defaultdict
 from functools import wraps
 from types import MethodType
@@ -14,6 +15,8 @@ from strongtyping.strong_typing_utils import check_type
 
 __override_items__ = []
 ANY = object()
+IGNORE_CHARS = "<function "
+START_IDX = len(IGNORE_CHARS)
 
 
 class FuncInfo:
@@ -27,7 +30,7 @@ class FuncInfo:
 
     @staticmethod
     def extract_class_name_from_func(function_str: str):
-        function_mro = function_str[: function_str.rfind(" at")]
+        function_mro = function_str[START_IDX : function_str.rfind(" at")]
         try:
             return function_mro.split(".")[-2]
         except IndexError:
@@ -180,9 +183,16 @@ def overload(func):
             cached_dict[cached_key] = result
             return result
         except (KeyError, TypeError):
-            raise AttributeError(
-                f"{cls_.__class__.__name__} has no function which matches with your parameters {args} {kwargs}"
-            )
+            if is_module_function:
+                info = pprint.pformat(args) if cls_ or args else pprint.pformat(kwargs)
+                raise AttributeError(
+                    f"`{func_class_name}` has no function which matches with your parameters `{info}`"
+                )
+            else:
+                info = pprint.pformat((cls_, *args)) if cls_ or args else pprint.pformat(kwargs)
+                raise AttributeError(
+                    f"No function was found which matches your parameters `{info}`"
+                )
 
     inner.__doc__ = generate_docstring(func.__name__)
     return inner

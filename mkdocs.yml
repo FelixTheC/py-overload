@@ -1,0 +1,19 @@
+site_name: strongtyping-pyoverload
+site_url: https://github.com/FelixTheC/py-overload
+repo_name: 'FelixTheC-strongtyping-pyoverload'
+nav:
+    - Home: 'index.md'
+    - User's guide:
+        - 'Installation': 'install.md'
+        - 'Class level': 'class_level.md'
+        - 'Module level': 'module_level.md'
+    - Examples:
+        - 'Django': 'django.md'
+    - Requirements:
+          'Requirements': 'requirements.md'
+    - About:
+        - 'License': 'license.md'
+        - 'Release Notes': 'CHANGELOG.md'
+        - 'Authors': 'authors.md'
+theme: readthedocs
+extra_css: [extra.css]
