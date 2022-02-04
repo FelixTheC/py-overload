@@ -42,7 +42,7 @@ we define functions and sometimes allow multiple parameters because the end resu
 but we need to make some additional parsing or so. To have cleaner code we now create also some helper functions.
 
 
-### The solution
+### The Solution
 with the `overload` decorator you can define dedicated functions with the same name.
 ```python
 from typing import List

@@ -1,5 +1,6 @@
 # How to use `strongtyping-pyoverload` on a class based level
 
+### Overloading methods 
 ```python
 from strongtyping_pyoverload import overload
 
@@ -21,11 +22,11 @@ class Foo:
 ```pycon
 >>> foo = Foo()
 >>> foo.func("hello")
-"Called with `str`"
+Called with `str`
 >>> foo.func(list("hello"))
-"Called with `list`"
+Called with `list`
 >>> foo.func(tuple("hello"))
-"Called with `tuple`"
+Called with `tuple`
 ```
 
 ### Subclasses/Inheritance
@@ -104,8 +105,32 @@ hello_world
 9
 ```
 
+### Variable Parameter length
+you can also define the same function with different no. of parameters with the same type
+```python
+from strongtyping_pyoverload import overload
+
+
+class Other:
+
+    @overload
+    def other_func(self, a: int, b: int):
+        return (a + b) * (a + b)
+    
+    @overload
+    def other_func(self, a: int, b: int, c: int):
+        return (a + b) * (a + b)
+```
+```pycon
+>>> other = Other()
+>>> other.other_func(3, 4)
+49
+>>> other.other_func(3, 4, 5)
+245
+```
+
 ### No function matches
-when no function matches with the parameter you're using then an `AttributError` will be raised
+when no function matches an `AttributError` will be raised
 ```python
 from strongtyping_pyoverload import overload
 
@@ -120,5 +145,5 @@ class Example:
 >>> example.other_func("Not", "Supported")
 Traceback (most recent call last):
 ...
-AttributeError: Example has no function which matches with your parameters ("Not", "Supported") {}
+AttributeError: `Example` has no function which matches with your parameters `('Not', 'Supported')`
 ```

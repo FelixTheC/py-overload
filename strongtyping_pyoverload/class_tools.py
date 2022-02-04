@@ -15,6 +15,8 @@ from strongtyping.strong_typing_utils import check_type
 
 __override_items__ = []
 ANY = object()
+IGNORE_CHARS = "<function "
+START_IDX = len(IGNORE_CHARS)
 
 
 class FuncInfo:
@@ -28,7 +30,7 @@ class FuncInfo:
 
     @staticmethod
     def extract_class_name_from_func(function_str: str):
-        function_mro = function_str[: function_str.rfind(" at")]
+        function_mro = function_str[START_IDX: function_str.rfind(" at")]
         try:
             return function_mro.split(".")[-2]
         except IndexError:
@@ -182,9 +184,9 @@ def overload(func):
             return result
         except (KeyError, TypeError):
             if is_module_function:
-                info = pprint.pformat(*args) if cls_ or args else pprint.pformat(kwargs)
+                info = pprint.pformat(args) if cls_ or args else pprint.pformat(kwargs)
                 raise AttributeError(
-                    f"{func_class_name} has no function which matches with your parameters {info}"
+                    f"`{func_class_name}` has no function which matches with your parameters `{info}`"
                 )
             else:
                 info = pprint.pformat((cls_, *args)) if cls_ or args else pprint.pformat(kwargs)

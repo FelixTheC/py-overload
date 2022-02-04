@@ -7,6 +7,8 @@ nav:
         - 'Installation': 'install.md'
         - 'Class level': 'class_level.md'
         - 'Module level': 'module_level.md'
+    - Examples:
+        - 'Django': 'django.md'
     - Requirements:
           'Requirements': 'requirements.md'
     - About:
