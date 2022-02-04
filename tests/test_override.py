@@ -136,3 +136,4 @@ def test_on_module_level():
     assert module_func("1", "2") == 2
     assert module_func(1, "2") == 3
     assert module_func(b=10, a=20) == 1
+    assert module_func(10, "20", c=2) == 4

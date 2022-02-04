@@ -22,3 +22,8 @@ def module_func(a: str, b: str):
 def module_func(a: int, b: str):
     return 3
 
+
+@overload
+def module_func(a: int, b: str, c: int):
+    return 4
+
