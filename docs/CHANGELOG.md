@@ -1,3 +1,6 @@
+## 0.2.1
+- better error messages 
+
 ## 0.2.0
 - add caching
 - support pure functions

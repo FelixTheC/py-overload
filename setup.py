@@ -18,11 +18,11 @@ packages = find_packages(exclude=["test_*", "*.tests"])
 
 setup(
     name="strongtyping-pyoverload",
-    version="0.2.0",
+    version="0.2.1",
     description="A Runtime method overload decorator.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/FelixTheC/override.git",
+    url="https://strongtyping-pyoverload.readthedocs.io/en/latest/",
     author="FelixTheC",
     author_email="fberndt87@gmail.com",
     license="MIT",
