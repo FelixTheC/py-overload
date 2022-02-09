@@ -6,14 +6,12 @@
 ![Python tox](https://github.com/FelixTheC/py-overload/workflows/Python%20tox/badge.svg)
 ![image](https://codecov.io/gh/FelixTheC/py-overload/graph/badge.svg)
 
-[__*strongtyping-pyoverload*__](https://github.com/FelixTheC/py-overload) gives you a decorator `overload` which helps
-you writing cleaner Python-Code in a way similar as in C++.
+[__*strongtyping-pyoverload*__](https://github.com/FelixTheC/py-overload) provides you with a decorator `overload`, which add overloading capacity similar to C++.
 
 ### The Problem
-With starting of Type-Hints in Python we can now better define what input we expect
-we can inform that we only want to get a specific kind of Type(s). 
+With the introduction of Type-Hints in Python, now one is able to define the intended input types of a certain function. 
 
-This works pretty well, but often we end up in one of the following or similar ways.
+This works pretty well, but often we end up in one of the following or similar situation.
 
 ```python
 def func(a: Union[str, int]):
@@ -71,7 +69,6 @@ class Example:
     def my_func(self, val: List[int], other_val, /):
         return [other_val * v for v in val]
 ```
-If you now investigate the `class` with `dir` you will see besides a lot of dunder methods only one method `my_func`
-`['__class__', '__delattr__', ..., '__weakref__', 'my_func']`. 
+If you now investigate the class with `dir()` you will see (besides a lot of other methods) only one method for `my_func` `['_class_', '_delattr_', ..., '_weakref_', 'my_func']`. 
 
-_With this behavior we can get rid of the `Union` typehint in some cases._
+_With this behavior we can get rid of the Union typehint in some cases. and allow more control over the intended function behaviour_

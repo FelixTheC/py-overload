@@ -6,8 +6,7 @@
 ![Python tox](https://github.com/FelixTheC/py-overload/workflows/Python%20tox/badge.svg)
 ![image](https://codecov.io/gh/FelixTheC/py-overload/graph/badge.svg)
 
-
-## A Runtime method overload decorator which should behave like a compiled language
+## A Runtime method overload decorator which add overloading capacity similar to C++
 - there is a `override` decorator from `typing` which works only for static type checking
 - this decorator works on `runtime`
 
