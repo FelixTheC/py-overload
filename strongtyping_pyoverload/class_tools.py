@@ -117,15 +117,25 @@ class FuncInfo:
         return True
 
     def _validate_with_var_positional(self, args_: tuple, kwargs_: dict):
-        arg_values = args_[:self.first_var_positional_pos]
+        arg_values = args_[: self.first_var_positional_pos]
         return self._validate_general(arg_values, kwargs_)
 
     def _validate_with_var_keyword(self, args_: tuple, kwargs_: dict):
-        kwarg_values = list(kwargs_.keys())[:self.first_var_keyword_pos]
-        if kwarg_values:
-            return self._validate_general(args_, {key: kwargs_[key] for key in kwarg_values})
-        print(kwargs_)
-        return self._validate_general(args_, kwargs_)
+        kwarg_values = [obj[2] for obj in list(self.params_)[: self.first_var_keyword_pos]]
+        if not any(obj in kwargs_ for obj in kwarg_values) and not args_:
+            if kwarg_values:
+                return False
+            return True
+        return self._validate_general(
+            args_, {key: kwargs_[key] for key in kwarg_values if key in kwargs_}
+        )
+
+    def _validate_with_var_pos_and_keyword(self, args_: tuple, kwargs_: dict):
+        arg_values = args_[: self.first_var_positional_pos]
+        kwarg_values = [obj[2] for obj in list(self.params_)[: self.first_var_positional_pos]]
+        if not kwarg_values:
+            return self._validate_general(arg_values, {})
+        return True
 
     def __eq__(self, other):
         if self.is_keyword_only:
@@ -137,6 +147,8 @@ class FuncInfo:
                 return False
             args_, kwargs_ = other
             if len(self.params_) != len(args_) + len(kwargs_):
+                # if self.contains_args and self.contains_kwargs:
+                #     return self._validate_with_var_pos_and_keyword(args_, kwargs_)
                 if self.contains_args:
                     return self._validate_with_var_positional(args_, kwargs_)
                 elif self.contains_kwargs:
@@ -153,7 +165,6 @@ def generate_parameter_infos(func: MethodType):
         for key, val in params.items()
         if val.name != "self"
     }
-    print(f'{func_params = }')
     for key, val in annotations.items():
         if elem := func_params.get(key):
             func_params[key] = (val, elem[1], elem[2])
