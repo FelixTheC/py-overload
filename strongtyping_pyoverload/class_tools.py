@@ -53,52 +53,96 @@ class FuncInfo:
         return all(obj[1] == "POSITIONAL_ONLY" for obj in self.params_)
 
     @property
+    def contains_args(self):
+        if not self.params_:
+            return False
+        return any(obj[1] == "VAR_POSITIONAL" for obj in self.params_)
+
+    @property
+    def contains_kwargs(self):
+        if not self.params_:
+            return False
+        return any(obj[1] == "VAR_KEYWORD" for obj in self.params_)
+
+    @property
     def no_parameter(self):
         return len(self.params_) == 0
+
+    @property
+    def first_var_positional_pos(self):
+        return [obj[1] == "VAR_POSITIONAL" for obj in self.params_].index(True)
+
+    @property
+    def first_var_keyword_pos(self):
+        return [obj[1] == "VAR_KEYWORD" for obj in self.params_].index(True)
 
     def __str__(self):
         params_txt = "_".join(str(param) for param in self.params_)
         return f"{self.func_}_{params_txt}"
 
+    def _validated_keyword_only(self, other):
+        if len(self.params_) != len(other):
+            return False
+        for param in self.params_:
+            if obj := other.get(param[2]):
+                if param[0] != str(ANY):
+                    if not check_type(obj, param[0]):
+                        return False
+            else:
+                return False
+        return True
+
+    def _validate_positional_only(self, other):
+        if len(self.params_) != len(other):
+            return False
+        for param, arg in zip(self.params_, other):
+            if param[0] != str(ANY):
+                if not check_type(arg, param[0]):
+                    return False
+        return True
+
+    def _validate_general(self, args_, kwargs_):
+        pos_args = []
+        for param in self.params_:
+            if obj := kwargs_.get(param[2]):
+                if param[0] != str(ANY):
+                    if not check_type(obj, param[0]):
+                        return False
+            else:
+                pos_args.append(param)
+        for arg, param in zip(args_, pos_args):
+            if param[0] != str(ANY):
+                if not check_type(arg, param[0]):
+                    return False
+        return True
+
+    def _validate_with_var_positional(self, args_: tuple, kwargs_: dict):
+        arg_values = args_[:self.first_var_positional_pos]
+        return self._validate_general(arg_values, kwargs_)
+
+    def _validate_with_var_keyword(self, args_: tuple, kwargs_: dict):
+        kwarg_values = list(kwargs_.keys())[:self.first_var_keyword_pos]
+        if kwarg_values:
+            return self._validate_general(args_, {key: kwargs_[key] for key in kwarg_values})
+        print(kwargs_)
+        return self._validate_general(args_, kwargs_)
+
     def __eq__(self, other):
         if self.is_keyword_only:
-            if len(self.params_) != len(other):
-                return False
-            for param in self.params_:
-                if obj := other.get(param[2]):
-                    if param[0] != str(ANY):
-                        if not check_type(obj, param[0]):
-                            return False
-                else:
-                    return False
-            return True
+            return self._validated_keyword_only(other)
         elif self.is_positional_only:
-            if len(self.params_) != len(other):
-                return False
-            for param, arg in zip(self.params_, other):
-                if param[0] != str(ANY):
-                    if not check_type(arg, param[0]):
-                        return False
-            return True
+            return self._validate_positional_only(other)
         else:
             if self.no_parameter and other:
                 return False
             args_, kwargs_ = other
             if len(self.params_) != len(args_) + len(kwargs_):
+                if self.contains_args:
+                    return self._validate_with_var_positional(args_, kwargs_)
+                elif self.contains_kwargs:
+                    return self._validate_with_var_keyword(args_, kwargs_)
                 return False
-            pos_args = []
-            for param in self.params_:
-                if obj := kwargs_.get(param[2]):
-                    if param[0] != str(ANY):
-                        if not check_type(obj, param[0]):
-                            return False
-                else:
-                    pos_args.append(param)
-            for arg, param in zip(args_, pos_args):
-                if param[0] != str(ANY):
-                    if not check_type(arg, param[0]):
-                        return False
-            return True
+            return self._validate_general(args_, kwargs_)
 
 
 def generate_parameter_infos(func: MethodType):
@@ -109,6 +153,7 @@ def generate_parameter_infos(func: MethodType):
         for key, val in params.items()
         if val.name != "self"
     }
+    print(f'{func_params = }')
     for key, val in annotations.items():
         if elem := func_params.get(key):
             func_params[key] = (val, elem[1], elem[2])

@@ -137,3 +137,43 @@ def test_on_module_level():
     assert module_func(1, "2") == 3
     assert module_func(b=10, a=20) == 1
     assert module_func(10, "20", c=2) == 4
+
+
+def test_with_args():
+    class Bar:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, a: str, *args):
+            return f'{a} - {sum(args)}'
+
+        @overload
+        def other_func(self, *args):
+            return sum(args)
+
+    bar = Bar()
+    assert bar.other_func(2, 2) == 16
+    assert bar.other_func(2, 3, 4, 5, 6) == 20
+    assert bar.other_func("2", 2, 3, 4, 5, 6) == '2 - 20'
+
+
+def test_with_star_kwargs():
+    class Bar:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, a: str, **kwargs):
+            return f'{a} - {sum(kwargs.values())}'
+
+        @overload
+        def other_func(self, **kwargs):
+            return sum(kwargs.values())
+
+    bar = Bar()
+    assert bar.other_func(2, 2) == 16
+    assert bar.other_func(f=2, b=3, c=4, d=5, e=6) == 20
+    assert bar.other_func(abc="2", a=2, b=3, c=4, d=5, e=6) == '2 - 20'
