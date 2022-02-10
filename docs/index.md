@@ -71,4 +71,37 @@ class Example:
 ```
 If you now investigate the class with `dir()` you will see (besides a lot of other methods) only one method for `my_func` `['_class_', '_delattr_', ..., '_weakref_', 'my_func']`. 
 
+This also works with pure functions inside of a module
+
+_module_a.py_
+```python
+from strongtyping_pyoverload import overload
+
+
+@overload
+def module_func():
+    return 0
+
+
+@overload
+def module_func(a: int, b: int):
+    return a * b
+
+
+@overload
+def module_func(a: str, b: str):
+    return a + b
+```
+```pycon
+>>> from module_a import module_func
+>>> module_func()
+0
+>>> module_func(2, 2)
+4
+>>> module_func("foo", "bar")
+"foobar"
+```
+
 _With this behavior we can get rid of the Union typehint in some cases. and allow more control over the intended function behaviour_
+
+Detailed information can be found in the **User's guide** section
