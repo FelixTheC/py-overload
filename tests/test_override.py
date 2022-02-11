@@ -179,23 +179,46 @@ def test_with_star_kwargs():
     assert foobar.other_func("2", f=2, b=3, c=4, d=5, e=6) == "2 - 20"
 
 
-@pytest.mark.skip()
 def test_with_args_and_kwargs():
-    class Bar:
+    class Foo:
         @overload
         def other_func(self, a: int, b: int):
             return (a + b) * (a + b)
 
         @overload
-        def other_func(self, a: str, *args, **kwargs):
-            return f"{a} - {sum([*args, *kwargs.values()])}"
+        def other_func(self, a: str, b: int, *args, **kwargs):
+            return f"{a}, {b} - {sum([*args, *kwargs.values()])}"
 
         @overload
         def other_func(self, *args, **kwargs):
             return sum([*args, *kwargs.values()])
 
-    bar = Bar()
-    assert bar.other_func(2, 2) == 16
-    assert bar.other_func(2, 3, 4, d=5, e=6) == 20
-    assert bar.other_func(2, 3, a="2", c=4, d=5, e=6) == "2 - 20"
-    assert bar.other_func("2", 2, 3, 4, d=5, e=6) == "2 - 20"
+    foo = Foo()
+    assert foo.other_func(2, 2) == 16
+    assert foo.other_func(2, 3, 4, d=5, e=6) == 20
+    assert foo.other_func("2", 2, 3, 4, d=5, e=6) == "2, 2 - 18"
+
+
+def test_different_defaults():
+    class MyOther:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, *args):
+            return sum(args)
+
+        @overload
+        def other_func(self, **kwargs):
+            return sum([*kwargs.values()]) * 10
+
+        @overload
+        def other_func(self, *args, **kwargs):
+            return sum([*kwargs.values()]) * 10 + sum(args)
+
+    other = MyOther()
+    assert other.other_func(5, 5) == 100
+    assert other.other_func(1, 2, 3, 4, 5) == 15
+    assert other.other_func(a=1, b=2, c=3, d=4, e=5) == 150
+    assert other.other_func(5, 6, a=1, b=2, c=3, d=4, e=5) == 161
