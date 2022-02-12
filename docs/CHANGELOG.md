@@ -1,3 +1,7 @@
+## 0.3.0
+- support *args and **kwargs
+- extend Documentation
+
 ## 0.2.1
 - better error messages 
 
