@@ -26,4 +26,3 @@ def module_func(a: int, b: str):
 @overload
 def module_func(a: int, b: str, c: int):
     return 4
-

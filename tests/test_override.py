@@ -115,7 +115,6 @@ def test_caching_works_pure():
 
 
 def test_works_for_normal_functions():
-
     @overload
     def my_func(a: int, b: int):
         return a * b
@@ -137,3 +136,89 @@ def test_on_module_level():
     assert module_func(1, "2") == 3
     assert module_func(b=10, a=20) == 1
     assert module_func(10, "20", c=2) == 4
+
+
+def test_with_args():
+    class Bar:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, a: str, *args):
+            return f"{a} - {sum(args)}"
+
+        @overload
+        def other_func(self, *args):
+            return sum(args)
+
+    bar = Bar()
+    assert bar.other_func(2, 2) == 16
+    assert bar.other_func(2, 3, 4, 5, 6) == 20
+    assert bar.other_func("2", 2, 3, 4, 5, 6) == "2 - 20"
+
+
+def test_with_star_kwargs():
+    class FooBar:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, a: str, **kwargs):
+            return f"{a} - {sum(kwargs.values())}"
+
+        @overload
+        def other_func(self, **kwargs):
+            return sum(kwargs.values())
+
+    foobar = FooBar()
+    assert foobar.other_func(2, 2) == 16
+    assert foobar.other_func(f=2, b=3, c=4, d=5, e=6) == 20
+    assert foobar.other_func(a="2", f=2, b=3, c=4, d=5, e=6) == "2 - 20"
+    assert foobar.other_func("2", f=2, b=3, c=4, d=5, e=6) == "2 - 20"
+
+
+def test_with_args_and_kwargs():
+    class Foo:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, a: str, b: int, *args, **kwargs):
+            return f"{a}, {b} - {sum([*args, *kwargs.values()])}"
+
+        @overload
+        def other_func(self, *args, **kwargs):
+            return sum([*args, *kwargs.values()])
+
+    foo = Foo()
+    assert foo.other_func(2, 2) == 16
+    assert foo.other_func(2, 3, 4, d=5, e=6) == 20
+    assert foo.other_func("2", 2, 3, 4, d=5, e=6) == "2, 2 - 18"
+
+
+def test_different_defaults():
+    class MyOther:
+        @overload
+        def other_func(self, a: int, b: int):
+            return (a + b) * (a + b)
+
+        @overload
+        def other_func(self, *args):
+            return sum(args)
+
+        @overload
+        def other_func(self, **kwargs):
+            return sum([*kwargs.values()]) * 10
+
+        @overload
+        def other_func(self, *args, **kwargs):
+            return sum([*kwargs.values()]) * 10 + sum(args)
+
+    other = MyOther()
+    assert other.other_func(5, 5) == 100
+    assert other.other_func(1, 2, 3, 4, 5) == 15
+    assert other.other_func(a=1, b=2, c=3, d=4, e=5) == 150
+    assert other.other_func(5, 6, a=1, b=2, c=3, d=4, e=5) == 161
