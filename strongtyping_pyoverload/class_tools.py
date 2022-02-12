@@ -81,7 +81,7 @@ class FuncInfo:
         return f"{self.func_}_{params_txt}"
 
     def __repr__(self):
-        return f'{self.cls_name_}-{self.func_name_}'
+        return f"{self.cls_name_}-{self.func_name_}"
 
     def _validated_keyword_only(self, other):
         if len(self.params_) != len(other):
@@ -225,9 +225,7 @@ def handle_error(is_module_function, func_class_name, cls_, args, kwargs, /):
         )
     else:
         info = pprint.pformat((cls_, *args)) if cls_ or args else pprint.pformat(kwargs)
-        raise AttributeError(
-            f"No function was found which matches your parameters `{info}`"
-    )
+        raise AttributeError(f"No function was found which matches your parameters `{info}`")
 
 
 def overload(func):
