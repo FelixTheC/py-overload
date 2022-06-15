@@ -5,7 +5,7 @@
 ![Python application](https://github.com/FelixTheC/py-overload/workflows/Python%20application/badge.svg)
 ![Python tox](https://github.com/FelixTheC/py-overload/workflows/Python%20tox/badge.svg)
 ![image](https://codecov.io/gh/FelixTheC/py-overload/graph/badge.svg)
-![](https://img.shields.io/pypi/dm/pyoverload?style=plastic)
+![](https://img.shields.io/pypi/dm/pyoverload)
 
 ## A Runtime method overload decorator which add overloading capacity similar to C++
 - there is a `override` decorator from `typing` which works only for static type checking
