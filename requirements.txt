@@ -1,4 +1,4 @@
 pytest==6.2.5
-strongtyping==2.1.9
+strongtyping==3.10.5
 pytest-cov>=2.10.0
 codecov
