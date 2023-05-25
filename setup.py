@@ -18,7 +18,7 @@ packages = find_packages(exclude=["test_*", "*.tests"])
 
 setup(
     name="strongtyping-pyoverload",
-    version="0.3.0",
+    version="0.3.1",
     description="A Runtime method overload decorator.",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -32,7 +32,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
-    install_requires=["strongtyping"],
+    install_requires=["strongtyping>=3.10,<=3.11"],
     dependencies="",
     packages=packages,
     python_requires=">=3.9",
