@@ -32,7 +32,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
-    install_requires=["strongtyping>=3.10,<=3.11"],
+    install_requires=["strongtyping>=3.9,>=3.10,<=3.11"],
     dependencies="",
     packages=packages,
     python_requires=">=3.9",
