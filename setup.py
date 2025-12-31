@@ -18,7 +18,7 @@ packages = find_packages(exclude=["test_*", "*.tests"])
 
 setup(
     name="strongtyping-pyoverload",
-    version="0.4.0",
+    version="0.4.1",
     description="A Runtime method overload decorator.",
     long_description=README,
     long_description_content_type="text/markdown",
