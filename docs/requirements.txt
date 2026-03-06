@@ -10,7 +10,7 @@ Jinja2==3.1.6
 joblib==1.2.0
 livereload==2.6.3
 lunr==0.5.8
-Markdown==3.3.4
+Markdown==3.8.1
 MarkupSafe==2.0.1
 mkdocs==1.2.3
 more-itertools==8.7.0
