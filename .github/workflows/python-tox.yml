@@ -35,7 +35,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv export --format=requirements.txt >> requirements.txt
+          pip install --upgrade pip
+          uv export --format=requirements.txt --no-hashes --no-header >> requirements.txt
           python -m pip install -r requirements.txt
           pip install tox
       - name: Run tox
