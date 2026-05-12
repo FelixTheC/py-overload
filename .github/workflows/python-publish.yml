@@ -74,7 +74,9 @@ jobs:
       uses: astral-sh/setup-uv@v5
 
     - name: Build package
-      run: uv build
+      run: |
+        uv add twine
+        uv build
 
 #    - name: Publish package distributions to PyPI
 #      uses: pypa/gh-action-pypi-publish@release/v1
@@ -83,4 +85,4 @@ jobs:
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: twine upload dist/*
+      run: uv run twine upload dist/*
