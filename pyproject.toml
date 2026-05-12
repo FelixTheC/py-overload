@@ -1,6 +1,6 @@
 [project]
 name = "py-overload"
-version = "0.4.4.post2"
+version = "0.4.4.post3"
 authors = [
     { name = "FelixTheC", email = "fberndt87@gmail.com" },
 ]
