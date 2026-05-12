@@ -5,4 +5,4 @@
 @author: felix
 """
 
-from .class_tools import overload
+from .class_tools import overload as overload
