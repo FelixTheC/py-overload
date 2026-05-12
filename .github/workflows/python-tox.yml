@@ -30,14 +30,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          uv export --format=requirements.txt --no-hashes --no-header >> requirements.txt
-          python -m pip install -r requirements.txt
-          pip install tox
+          pip install tox pytest pytest-cov strongtyping
       - name: Run tox
         run: tox
