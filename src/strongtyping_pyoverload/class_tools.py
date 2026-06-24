@@ -5,8 +5,16 @@ from collections import defaultdict
 from functools import wraps
 from types import MethodType
 
+import itertools
 from strongtyping.cached_dict import CachedDict
 from strongtyping.strong_typing_utils import check_type
+
+try:
+    from pydantic import BaseModel
+except (ModuleNotFoundError, ImportError):
+    PYDANTIC_INSTALLED = False
+else:
+    PYDANTIC_INSTALLED = True
 
 __override_items__ = defaultdict(list)
 ANY = object()
@@ -181,15 +189,23 @@ def generate_parameter_infos(func: MethodType):
 
 def generate_docstring(lookup_key: tuple[str, str]):
     return "\n".join(
-        obj.func_.__doc__
-        for obj in __override_items__[lookup_key]
-        if obj.func_.__doc__
+        obj.func_.__doc__ for obj in __override_items__[lookup_key] if obj.func_.__doc__
     )
 
 
-def find_corresponding_func(func_name, cls_name, args, kwargs):
+def find_corresponding_func(func_name, cls_name: str | list[str], args, kwargs):
     pos_or_kwarg_funcs = []
-    data = __override_items__[(cls_name, func_name)]
+    if isinstance(cls_name, str):
+        data = __override_items__[(cls_name, func_name)]
+    else:
+        data = itertools.chain.from_iterable(
+            [
+                __override_items__[(cls_name_, func_name)]
+                for cls_name_ in cls_name
+                if cls_name_ != "object"
+            ]
+        )
+
     for info in data:
         if info.is_keyword_only:
             if info == kwargs:
@@ -202,8 +218,14 @@ def find_corresponding_func(func_name, cls_name, args, kwargs):
         else:
             pos_or_kwarg_funcs.append(info)
     for info in pos_or_kwarg_funcs:
+        if PYDANTIC_INSTALLED:
+            for param in info.params_:
+                # param[0] can be a Pydantic Schema, best would be to check for the "validate" function
+                # we need to loop over the args and kwargs and call "validate" to be sure that we can use this function
+                print(dir(param[0]))
         if info == (args, kwargs):
             return info.func_
+    return None
 
 
 def is_module(func_, cls_):
@@ -257,14 +279,19 @@ def overload(func):
         if cached_result := cached_dict.get(cached_key):
             return cached_result
 
+        try:
+            class_names = [obj.__name__ for obj in cls_.__class__.__mro__]
+        except (AttributeError, TypeError):
+            class_names = func_class_name
+
         if is_module_function or cls_ is None:
-            required_function = find_corresponding_func(
-                func.__name__, func_class_name, args, kwargs
-            )
+            required_function = find_corresponding_func(func.__name__, class_names, args, kwargs)
         else:
             required_function = find_corresponding_func(
-                func.__name__, func_class_name, (cls_, *args), kwargs
+                func.__name__, class_names, (cls_, *args), kwargs
             )
+        if not required_function:
+            raise
         try:
             if cls_ is None:
                 result = required_function(*args, **kwargs)
@@ -311,9 +338,7 @@ def generate_signature(lookup_key, merged_annotations):
 
     parameters = []
     if has_self:
-        parameters.append(
-            inspect.Parameter("self", inspect.Parameter.POSITIONAL_OR_KEYWORD)
-        )
+        parameters.append(inspect.Parameter("self", inspect.Parameter.POSITIONAL_OR_KEYWORD))
     for name in seen:
         kind = kinds.get(name, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         if kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
