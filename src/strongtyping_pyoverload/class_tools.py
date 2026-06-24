@@ -9,8 +9,10 @@ import itertools
 from strongtyping.cached_dict import CachedDict
 from strongtyping.strong_typing_utils import check_type
 
+from strongtyping_pyoverload.func_info import FuncInfo
+
 try:
-    from pydantic import BaseModel
+    from pydantic import BaseModel, ValidationError
 except (ModuleNotFoundError, ImportError):
     PYDANTIC_INSTALLED = False
 else:
@@ -20,157 +22,6 @@ __override_items__ = defaultdict(list)
 ANY = object()
 IGNORE_CHARS = "<function "
 START_IDX = len(IGNORE_CHARS)
-
-
-class FuncInfo:
-    __slots__ = ("func_", "params_", "func_name_", "cls_name_")
-
-    def __init__(self, func_, params_: list):
-        self.func_ = func_
-        self.func_name_ = func_.__name__
-        self.params_ = params_
-        self.cls_name_ = self.extract_class_name_from_func(func_)
-
-    @staticmethod
-    def extract_class_name_from_func(function: object):
-        try:
-            return function.__qualname__.split(".")[-2]
-        except IndexError:
-            return ""
-
-    @property
-    def name(self) -> str:
-        return self.func_name_
-
-    @property
-    def lookup_key(self) -> tuple[str, str]:
-        return self.cls_name_, self.func_name_
-
-    @property
-    def is_keyword_only(self):
-        if not self.params_:
-            return False
-        return all(obj[1] == "KEYWORD_ONLY" for obj in self.params_)
-
-    @property
-    def is_positional_only(self):
-        if not self.params_:
-            return False
-        return all(obj[1] == "POSITIONAL_ONLY" for obj in self.params_)
-
-    @property
-    def contains_args(self):
-        if not self.params_:
-            return False
-        return any(obj[1] == "VAR_POSITIONAL" for obj in self.params_)
-
-    @property
-    def contains_kwargs(self):
-        if not self.params_:
-            return False
-        return any(obj[1] == "VAR_KEYWORD" for obj in self.params_)
-
-    @property
-    def no_parameter(self):
-        return len(self.params_) == 0
-
-    @property
-    def first_var_positional_pos(self):
-        return [obj[1] == "VAR_POSITIONAL" for obj in self.params_].index(True)
-
-    @property
-    def first_var_keyword_pos(self):
-        return [obj[1] == "VAR_KEYWORD" for obj in self.params_].index(True)
-
-    def __str__(self):
-        params_txt = "_".join(str(param) for param in self.params_)
-        return f"{self.func_}_{params_txt}"
-
-    def __repr__(self):
-        return f"{self.cls_name_}-{self.func_name_}"
-
-    def _validated_keyword_only(self, other):
-        if len(self.params_) != len(other):
-            return False
-        for param in self.params_:
-            if obj := other.get(param[2]):
-                if param[0] != str(ANY):
-                    if not check_type(obj, param[0]):
-                        return False
-            else:
-                return False
-        return True
-
-    def _validate_positional_only(self, other):
-        if len(self.params_) != len(other):
-            return False
-        for param, arg in zip(self.params_, other):
-            if param[0] != str(ANY):
-                if not check_type(arg, param[0]):
-                    return False
-        return True
-
-    def _validate_general(self, args_, kwargs_):
-        pos_args = []
-        for param in self.params_:
-            if obj := kwargs_.get(param[2]):
-                if param[0] != str(ANY):
-                    if not check_type(obj, param[0]):
-                        return False
-            else:
-                pos_args.append(param)
-        for arg, param in zip(args_, pos_args):
-            if param[0] != str(ANY):
-                if not check_type(arg, param[0]):
-                    return False
-        return True
-
-    def _validate_with_var_positional(self, args_: tuple, kwargs_: dict):
-        arg_values = args_[: self.first_var_positional_pos]
-        return self._validate_general(arg_values, kwargs_)
-
-    def _validate_with_var_keyword(self, args_: tuple, kwargs_: dict):
-        kwarg_values = [obj[2] for obj in list(self.params_)[: self.first_var_keyword_pos]]
-        if not any(obj in kwargs_ for obj in kwarg_values) and not args_:
-            if kwarg_values:
-                return False
-            return True
-        return self._validate_general(
-            args_, {key: kwargs_[key] for key in kwarg_values if key in kwargs_}
-        )
-
-    def _validate_with_var_pos_and_keyword(self, args_: tuple, kwargs_: dict):
-        if kv := (set([obj[2] for obj in self.params_]) & set(kwargs_.keys())):
-            return self._validate_general(tuple(), {key: kwargs_[key] for key in kv})
-        else:
-            return self._validate_general(args_[: self.first_var_positional_pos], kwargs_)
-
-    def __eq__(self, other):
-        if self.is_keyword_only:
-            return self._validated_keyword_only(other)
-        elif self.is_positional_only:
-            return self._validate_positional_only(other)
-        else:
-            if self.no_parameter and other:
-                return False
-            args_, kwargs_ = other
-            if len(self.params_) != len(args_) + len(kwargs_):
-                if self.contains_args and self.contains_kwargs:
-                    return self._validate_with_var_pos_and_keyword(args_, kwargs_)
-                elif self.contains_args:
-                    if len(self.params_) == 1 and not kwargs_:
-                        return True
-                    elif len(self.params_) == 1 and kwargs_:
-                        return False
-                    return self._validate_with_var_positional(args_, kwargs_)
-                elif self.contains_kwargs:
-                    if len(self.params_) == 1 and not args_:
-                        return True
-                    elif len(self.params_) == 1 and args_:
-                        return False
-                    return self._validate_with_var_keyword(args_, kwargs_)
-                return False
-            return self._validate_general(args_, kwargs_)
 
 
 def generate_parameter_infos(func: MethodType):
@@ -193,7 +44,7 @@ def generate_docstring(lookup_key: tuple[str, str]):
     )
 
 
-def find_corresponding_func(func_name, cls_name: str | list[str], args, kwargs):
+def find_corresponding_func(func_name, cls_name: str | list[str], args: tuple, kwargs: dict) -> FuncInfo | None:
     pos_or_kwarg_funcs = []
     if isinstance(cls_name, str):
         data = __override_items__[(cls_name, func_name)]
@@ -209,23 +60,51 @@ def find_corresponding_func(func_name, cls_name: str | list[str], args, kwargs):
     for info in data:
         if info.is_keyword_only:
             if info == kwargs:
-                return info.func_
+                return info
         elif info.is_positional_only:
             if info == args:
-                return info.func_
+                return info
         elif info.no_parameter and not args and not kwargs:
-            return info.func_
+            return info
         else:
             pos_or_kwarg_funcs.append(info)
     for info in pos_or_kwarg_funcs:
         if PYDANTIC_INSTALLED:
-            for param in info.params_:
-                # param[0] can be a Pydantic Schema, best would be to check for the "validate" function
-                # we need to loop over the args and kwargs and call "validate" to be sure that we can use this function
-                print(dir(param[0]))
+            res = check_pydantic_model(info, args, kwargs)
+            if res is not None and res:
+                return info
         if info == (args, kwargs):
-            return info.func_
+            return info
     return None
+
+
+def check_pydantic_model(func_info, args, kwargs) -> bool | None:
+    if not PYDANTIC_INSTALLED:
+        return False
+    is_valid = True
+    if any(isinstance(param[0], type) and issubclass(param[0], BaseModel) for param in func_info.params_):
+        for idx, param in enumerate(func_info.params_):
+            annotation = param[0]
+            try:
+                # Check if it's a Pydantic BaseModel subclass
+                if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+                    # Pydantic v2: use model_validate(); raises ValidationError on failure
+                    if args:
+                        model = annotation.model_validate(args[idx])
+                    else:
+                        model = annotation.model_validate(kwargs[param[2]])
+                else:
+                    is_valid = False
+            except (AttributeError, TypeError, ValidationError):
+                return False
+            else:
+                if args:
+                    func_info.pydantic_params_.append(model)
+                else:
+                    func_info.pydantic_kwargs_.append(model)
+    else:
+        return None
+    return is_valid
 
 
 def is_module(func_, cls_):
@@ -280,29 +159,35 @@ def overload(func):
             return cached_result
 
         try:
-            class_names = [obj.__name__ for obj in cls_.__class__.__mro__]
+            class_names = [obj.__name__ for obj in cls_.__class__.__mro__] if cls_ else []
+            class_names.append(func_class_name)
+            class_names = set(class_names)
         except (AttributeError, TypeError):
             class_names = func_class_name
 
         if is_module_function or cls_ is None:
-            required_function = find_corresponding_func(func.__name__, class_names, args, kwargs)
+            func_info = find_corresponding_func(func.__name__, class_names, args, kwargs)
         else:
-            required_function = find_corresponding_func(
+            func_info = find_corresponding_func(
                 func.__name__, class_names, (cls_, *args), kwargs
             )
-        if not required_function:
-            raise
+        if not func_info:
+            raise AttributeError(
+                f"No function was found which matches your parameters `{args}_{kwargs}`"
+            )
         try:
+            arg_values = func_info.pydantic_params_ if func_info.pydantic_params_ else args
+            kwarg_values = func_info.pydantic_kwargs_ if func_info.pydantic_kwargs_ else kwargs
             if cls_ is None:
-                result = required_function(*args, **kwargs)
+                result = func_info.func_(*arg_values, **kwarg_values)
             else:
-                result = required_function(cls_, *args, **kwargs)
+                result = func_info.func_(cls_, *arg_values, **kwarg_values)
             cached_dict[cached_key] = result
             return result
         except KeyError:
             handle_error(is_module_function, func_class_name, cls_, args, kwargs)
         except TypeError:
-            if required_function is None:
+            if func_info is None:
                 handle_error(is_module_function, func_class_name, cls_, args, kwargs)
             else:
                 raise

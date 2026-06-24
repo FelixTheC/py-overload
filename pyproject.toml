@@ -6,7 +6,7 @@ authors = [
 ]
 description = "Runtime method overload decorator to simulate C/C++ behavior of having multiple functions with the same name but different parameters."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.13",
@@ -15,7 +15,7 @@ classifiers = [
 ]
 license = { text = "MIT License" }
 dependencies = [
-    "strongtyping>=3.11.4"
+    "strongtyping>=3.13.0",
 ]
 
 [dependency-groups]
