@@ -10,19 +10,24 @@ def module_func():
 
 @overload
 def module_func(a: int, b: int):
-    return 1
+    return a * b
 
 
 @overload
 def module_func(a: str, b: str):
-    return 2
+    return a + b
 
 
 @overload
 def module_func(a: int, b: str):
-    return 3
+    return b * a
 
 
 @overload
 def module_func(a: int, b: str, c: int):
     return 4
+
+
+if __name__ == "__main__":
+    print(module_func(1, 2))
+    print(module_func)

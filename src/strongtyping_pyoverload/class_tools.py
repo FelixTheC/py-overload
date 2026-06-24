@@ -1,5 +1,6 @@
 import inspect
 import pprint
+import typing
 from collections import defaultdict
 from functools import wraps
 from types import MethodType
@@ -7,7 +8,7 @@ from types import MethodType
 from strongtyping.cached_dict import CachedDict
 from strongtyping.strong_typing_utils import check_type
 
-__override_items__ = []
+__override_items__ = defaultdict(list)
 ANY = object()
 IGNORE_CHARS = "<function "
 START_IDX = len(IGNORE_CHARS)
@@ -20,19 +21,22 @@ class FuncInfo:
         self.func_ = func_
         self.func_name_ = func_.__name__
         self.params_ = params_
-        self.cls_name_ = self.extract_class_name_from_func(str(func_))
+        self.cls_name_ = self.extract_class_name_from_func(func_)
 
     @staticmethod
-    def extract_class_name_from_func(function_str: str):
-        function_mro = function_str[START_IDX : function_str.rfind(" at")]
+    def extract_class_name_from_func(function: object):
         try:
-            return function_mro.split(".")[-2]
+            return function.__qualname__.split(".")[-2]
         except IndexError:
             return ""
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.func_name_
+
+    @property
+    def lookup_key(self) -> tuple[str, str]:
+        return self.cls_name_, self.func_name_
 
     @property
     def is_keyword_only(self):
@@ -175,23 +179,18 @@ def generate_parameter_infos(func: MethodType):
     return func_params.values()
 
 
-def generate_docstring(func_name: str):
+def generate_docstring(lookup_key: tuple[str, str]):
     return "\n".join(
         obj.func_.__doc__
-        for obj in __override_items__
-        if obj.name == func_name and obj.func_.__doc__
+        for obj in __override_items__[lookup_key]
+        if obj.func_.__doc__
     )
 
 
 def find_corresponding_func(func_name, cls_name, args, kwargs):
     pos_or_kwarg_funcs = []
-    data = defaultdict(list)
-    for obj in __override_items__:
-        if obj.name == func_name:
-            data[obj.cls_name_].append(obj)
-    subclass = data.pop(cls_name, [])
-    [subclass.extend(obj) for obj in list(data.values())]
-    for info in subclass:
+    data = __override_items__[(cls_name, func_name)]
+    for info in data:
         if info.is_keyword_only:
             if info == kwargs:
                 return info.func_
@@ -222,15 +221,35 @@ def handle_error(is_module_function, func_class_name, cls_, args, kwargs, /):
         raise AttributeError(f"No function was found which matches your parameters `{info}`")
 
 
+def generate_annotations(lookup_key):
+    data = __override_items__[lookup_key]
+    res = data[0].func_.__annotations__
+    for obj in data[1:]:
+        for key, val in obj.func_.__annotations__.items():
+            try:
+                res[key] = set([*res[key], val])
+            except TypeError:
+                res[key] = set([res[key], val])
+            except KeyError:
+                res[key] = val
+    for key, val in res.items():
+        try:
+            if len(val) > 1:
+                res[key] = typing.Union[*val]
+        except TypeError:
+            continue
+    return res
+
+
 def overload(func):
     func_info = FuncInfo(func, generate_parameter_infos(func))
-    __override_items__.append(func_info)
+    __override_items__[func_info.lookup_key].append(func_info)
     cached_dict = CachedDict()
 
     @wraps(func)
     def inner(cls_=None, *args, **kwargs):
         is_module_function = is_module(func, cls_) if cls_ is not None else False
-        func_class_name = FuncInfo.extract_class_name_from_func(str(func))
+        func_class_name = FuncInfo.extract_class_name_from_func(func)
         if is_module_function:
             cached_key = f"{func.__name__}_{func_class_name}_{args}_{kwargs}"
         else:
@@ -261,5 +280,64 @@ def overload(func):
             else:
                 raise
 
-    inner.__doc__ = generate_docstring(func.__name__)
+    inner.__doc__ = generate_docstring(func_info.lookup_key)
+    inner.__annotations__ = generate_annotations(func_info.lookup_key)
+    inner.__signature__ = generate_signature(func_info.lookup_key, inner.__annotations__)
     return inner
+
+
+def generate_signature(lookup_key, merged_annotations):
+    data = __override_items__[lookup_key]
+    # Collect parameter names in order of first appearance across overloads,
+    # skipping 'self'.
+    seen = []
+    kinds = {}
+    defaults = {}
+    has_self = False
+    for info in data:
+        try:
+            sig = inspect.signature(info.func_)
+        except (TypeError, ValueError):
+            continue
+        for name, param in sig.parameters.items():
+            if name == "self":
+                has_self = True
+                continue
+            if name not in seen:
+                seen.append(name)
+                kinds[name] = param.kind
+                if param.default is not inspect.Parameter.empty:
+                    defaults[name] = param.default
+
+    parameters = []
+    if has_self:
+        parameters.append(
+            inspect.Parameter("self", inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        )
+    for name in seen:
+        kind = kinds.get(name, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+            annotation = inspect.Parameter.empty
+        else:
+            annotation = merged_annotations.get(name, inspect.Parameter.empty)
+        if name in defaults:
+            parameters.append(
+                inspect.Parameter(name, kind, default=defaults[name], annotation=annotation)
+            )
+        else:
+            parameters.append(inspect.Parameter(name, kind, annotation=annotation))
+
+    return_annotation = merged_annotations.get("return", inspect.Signature.empty)
+    try:
+        return inspect.Signature(parameters=parameters, return_annotation=return_annotation)
+    except ValueError:
+        # Fallback: sort parameters by kind to satisfy ordering constraints.
+        kind_order = {
+            inspect.Parameter.POSITIONAL_ONLY: 0,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD: 1,
+            inspect.Parameter.VAR_POSITIONAL: 2,
+            inspect.Parameter.KEYWORD_ONLY: 3,
+            inspect.Parameter.VAR_KEYWORD: 4,
+        }
+        parameters.sort(key=lambda p: kind_order[p.kind])
+        return inspect.Signature(parameters=parameters, return_annotation=return_annotation)
