@@ -15,15 +15,15 @@ classifiers = [
 ]
 license = { text = "MIT License" }
 dependencies = [
-    "strongtyping>=3.13.0",
+    "strongtyping>=3.13.10",
 ]
 
 [dependency-groups]
 dev = [
-    "pydantic>=2.13.4",
-    "pytest>=9.0.3",
-    "pytest-cov>=7.1.0",
-    "ruff>=0.15.12",
+    "pydantic==2.13.4",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.15.19",
 ]
 
 [project.urls]
