@@ -1,11 +1,19 @@
 from strongtyping.strong_typing_utils import check_type
+
 ANY = object()
 
 
 class FuncInfo:
     pydantic_args_: list
     pydantic_kwargs_: dict
-    __slots__ = ("func_", "params_", "func_name_", "cls_name_", "pydantic_params_", "pydantic_kwargs_")
+    __slots__ = (
+        "func_",
+        "params_",
+        "func_name_",
+        "cls_name_",
+        "pydantic_params_",
+        "pydantic_kwargs_",
+    )
 
     def __init__(self, func_, params_: list):
         self.func_ = func_

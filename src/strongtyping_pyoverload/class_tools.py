@@ -42,7 +42,9 @@ def generate_docstring(lookup_key: tuple[str, str]):
     )
 
 
-def find_corresponding_func(func_name, cls_name: str | list[str], args: tuple, kwargs: dict) -> FuncInfo | None:
+def find_corresponding_func(
+    func_name, cls_name: str | list[str], args: tuple, kwargs: dict
+) -> FuncInfo | None:
     pos_or_kwarg_funcs = []
     if isinstance(cls_name, str):
         data = __override_items__[(cls_name, func_name)]
@@ -80,7 +82,10 @@ def check_pydantic_model(func_info, args, kwargs) -> bool | None:
     if not PYDANTIC_INSTALLED:
         return False
     is_valid = True
-    if any(isinstance(param[0], type) and issubclass(param[0], BaseModel) for param in func_info.params_):
+    if any(
+        isinstance(param[0], type) and issubclass(param[0], BaseModel)
+        for param in func_info.params_
+    ):
         for idx, param in enumerate(func_info.params_):
             annotation = param[0]
             try:
@@ -165,9 +170,7 @@ def overload(func):
         if is_module_function or cls_ is None:
             func_info = find_corresponding_func(func.__name__, class_names, args, kwargs)
         else:
-            func_info = find_corresponding_func(
-                func.__name__, class_names, (cls_, *args), kwargs
-            )
+            func_info = find_corresponding_func(func.__name__, class_names, (cls_, *args), kwargs)
         if not func_info:
             raise AttributeError(
                 f"No function was found which matches your parameters `{args}_{kwargs}`"
