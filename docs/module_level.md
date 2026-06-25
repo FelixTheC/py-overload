@@ -31,9 +31,9 @@ def module_func(a: str, b: str):
 ```
 
 ### No function matches
-when no function matches an `AttributError` will be raised
+When no function matches an `AttributeError` will be raised.
 ```pycon
 >>> from module_a import module_func
 >>> module_func(21)
-AttributeError: No function was found which matches your parameters `(21,)`
+AttributeError: No function was found which matches your parameters `(21,), {}`
 ```
