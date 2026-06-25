@@ -122,7 +122,9 @@ def handle_error(is_module_function, func_class_name, cls_, args, kwargs, /):
         )
     else:
         info = pprint.pformat((cls_, *args)) if cls_ or args else pprint.pformat(kwargs)
-        raise InvalidOverloadException(f"No function was found which matches your parameters `{info}`")
+        raise InvalidOverloadException(
+            f"No function was found which matches your parameters `{info}`"
+        )
 
 
 def generate_annotations(lookup_key):

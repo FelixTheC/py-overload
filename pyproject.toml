@@ -1,6 +1,6 @@
 [project]
 name = "strongtyping-pyoverload"
-version = "1.0.1"
+version = "1.0.2"
 authors = [
     { name = "FelixTheC", email = "fberndt87@gmail.com" },
 ]
