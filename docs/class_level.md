@@ -141,7 +141,13 @@ class Other:
 ```
 
 ### No function matches
-When no function matches an `AttributeError` will be raised.
+When no function matches, an `InvalidOverloadException` will be raised.
+It is importable from `strongtyping_pyoverload.exception`:
+
+```python
+from strongtyping_pyoverload.exception import InvalidOverloadException
+```
+
 ```python
 from strongtyping_pyoverload import overload
 
@@ -156,5 +162,17 @@ class Example:
 >>> example.other_func("Not", "Supported")
 Traceback (most recent call last):
 ...
-AttributeError: `Example` has no function which matches with your parameters `('Not', 'Supported'), {}`
+InvalidOverloadException: `Example` has no function which matches with your parameters `('Not', 'Supported'), {}`
+```
+
+You can handle it like any other exception:
+
+```python
+from strongtyping_pyoverload.exception import InvalidOverloadException
+
+try:
+    example.other_func("Not", "Supported")
+except InvalidOverloadException as exc:
+    # no matching overload — handle gracefully
+    ...
 ```

@@ -7,6 +7,8 @@ from types import MethodType
 
 import itertools
 from strongtyping.cached_dict import CachedDict
+
+from strongtyping_pyoverload.exception import InvalidOverloadException
 from strongtyping_pyoverload.func_info import FuncInfo
 
 try:
@@ -115,12 +117,12 @@ def is_module(func_, cls_):
 def handle_error(is_module_function, func_class_name, cls_, args, kwargs, /):
     if is_module_function:
         info = pprint.pformat(args) if cls_ or args else pprint.pformat(kwargs)
-        raise AttributeError(
+        raise InvalidOverloadException(
             f"`{func_class_name}` has no function which matches with your parameters `{info}`"
         )
     else:
         info = pprint.pformat((cls_, *args)) if cls_ or args else pprint.pformat(kwargs)
-        raise AttributeError(f"No function was found which matches your parameters `{info}`")
+        raise InvalidOverloadException(f"No function was found which matches your parameters `{info}`")
 
 
 def generate_annotations(lookup_key):
@@ -172,7 +174,7 @@ def overload(func):
         else:
             func_info = find_corresponding_func(func.__name__, class_names, (cls_, *args), kwargs)
         if not func_info:
-            raise AttributeError(
+            raise InvalidOverloadException(
                 f"No function was found which matches your parameters `{args}_{kwargs}`"
             )
         try:

@@ -73,7 +73,10 @@ None
 <Logger __main__ (WARNING)>
 ```
 #### Not supported types
+When no matching `__init__` overload is found, an `InvalidOverloadException`
+(from `strongtyping_pyoverload.exception`) is raised:
+
 ```pycon
 >>> example = Example("42", 84, logging.getLogger(__name__))
-AttributeError: `Example` has no function which matches with your parameters `('42', 84, <Logger __main__ (WARNING)>)`
+InvalidOverloadException: `Example` has no function which matches with your parameters `('42', 84, <Logger __main__ (WARNING)>)`
 ```

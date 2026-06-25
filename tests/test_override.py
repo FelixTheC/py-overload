@@ -9,6 +9,7 @@ from typing import List
 import pytest
 
 from strongtyping_pyoverload import overload
+from strongtyping_pyoverload.exception import InvalidOverloadException
 
 
 class Example:
@@ -81,11 +82,11 @@ def test_not_existing_option_raises_default_exception():
 
     other = Other()
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(InvalidOverloadException):
         other.missing_function()
 
     example = Example()
-    with pytest.raises(AttributeError):
+    with pytest.raises(InvalidOverloadException):
         example.my_func("This", "Not", "Supported")
 
 
@@ -222,3 +223,10 @@ def test_different_defaults():
     assert other.other_func(1, 2, 3, 4, 5) == 15
     assert other.other_func(a=1, b=2, c=3, d=4, e=5) == 150
     assert other.other_func(5, 6, a=1, b=2, c=3, d=4, e=5) == 161
+
+
+def test_cross_module_overload():
+    from .sub_tests.nested_module import nested_func
+
+    assert nested_func(1) == "int: 1"
+    assert nested_func("1") == "str: 1"

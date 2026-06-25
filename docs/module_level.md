@@ -31,9 +31,15 @@ def module_func(a: str, b: str):
 ```
 
 ### No function matches
-When no function matches an `AttributeError` will be raised.
+When no function matches, an `InvalidOverloadException` will be raised.
+It is importable from `strongtyping_pyoverload.exception`:
+
+```python
+from strongtyping_pyoverload.exception import InvalidOverloadException
+```
+
 ```pycon
 >>> from module_a import module_func
 >>> module_func(21)
-AttributeError: No function was found which matches your parameters `(21,), {}`
+InvalidOverloadException: No function was found which matches your parameters `(21,), {}`
 ```
