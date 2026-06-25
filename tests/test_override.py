@@ -82,7 +82,7 @@ def test_not_existing_option_raises_default_exception():
 
     other = Other()
 
-    with pytest.raises(InvalidOverloadException):
+    with pytest.raises(AttributeError):
         other.missing_function()
 
     example = Example()
