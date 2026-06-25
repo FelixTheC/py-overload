@@ -52,3 +52,19 @@ def test_pydantic_direct_model_instances():
     user = UserCreateSchema(name="Charlie", age=25)
     res = handler.process(user)
     assert res == "Created user Charlie"
+
+class ComplexPydanticHandler(DataHandler):
+    @overload
+    def process(self, data: UserCreateSchema, *, priority: int = 0):
+        return f"Created user {data.name} with priority {priority}"
+
+def test_complex_pydantic_dispatching():
+    handler = ComplexPydanticHandler()
+    
+    # Matches ComplexPydanticHandler.process because of keyword arg
+    assert handler.process({"name": "Alice", "age": 30}, priority=1) == "Created user Alice with priority 1"
+    
+    # Matches ComplexPydanticHandler.process even without priority because it has a default value
+    # and it is defined in the subclass, which usually takes precedence if it matches.
+    assert handler.process({"name": "Alice", "age": 30}) == "Created user Alice with priority 0"
+    assert handler.process({"id": 1, "name": "Bob"}) == "Updated user 1"

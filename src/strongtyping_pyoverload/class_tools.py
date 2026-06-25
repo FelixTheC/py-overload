@@ -7,8 +7,6 @@ from types import MethodType
 
 import itertools
 from strongtyping.cached_dict import CachedDict
-from strongtyping.strong_typing_utils import check_type
-
 from strongtyping_pyoverload.func_info import FuncInfo
 
 try:
@@ -28,7 +26,7 @@ def generate_parameter_infos(func: MethodType):
     params = inspect.signature(func).parameters
     annotations = func.__annotations__
     func_params = {
-        val.name: (str(ANY), val.kind.name, val.name)
+        val.name: (typing.Any, val.kind.name, val.name)
         for key, val in params.items()
         if val.name != "self"
     }
@@ -86,20 +84,18 @@ def check_pydantic_model(func_info, args, kwargs) -> bool | None:
         for idx, param in enumerate(func_info.params_):
             annotation = param[0]
             try:
-                # Check if it's a Pydantic BaseModel subclass
                 if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-                    # Pydantic v2: use model_validate(); raises ValidationError on failure
-                    if args:
+                    if args and idx < len(args):
                         model = annotation.model_validate(args[idx])
                     else:
                         model = annotation.model_validate(kwargs[param[2]])
                 else:
-                    is_valid = False
+                    continue
             except (AttributeError, TypeError, ValidationError):
                 return False
             else:
                 if args:
-                    func_info.pydantic_params_.append(model)
+                    func_info.pydantic_params_.append((idx, model))
                 else:
                     func_info.pydantic_kwargs_.append(model)
     else:
@@ -159,9 +155,10 @@ def overload(func):
             return cached_result
 
         try:
-            class_names = [obj.__name__ for obj in cls_.__class__.__mro__] if cls_ else []
-            class_names.append(func_class_name)
-            class_names = set(class_names)
+            class_names = [func_class_name]
+            for obj in cls_.__class__.__mro__:
+                if obj.__name__ not in class_names:
+                    class_names.append(obj.__name__)
         except (AttributeError, TypeError):
             class_names = func_class_name
 
@@ -176,8 +173,10 @@ def overload(func):
                 f"No function was found which matches your parameters `{args}_{kwargs}`"
             )
         try:
-            arg_values = func_info.pydantic_params_ if func_info.pydantic_params_ else args
-            kwarg_values = func_info.pydantic_kwargs_ if func_info.pydantic_kwargs_ else kwargs
+            arg_values = list(args)
+            for idx, model in func_info.pydantic_params_:
+                arg_values[idx] = model
+            kwarg_values = kwargs | func_info.pydantic_kwargs_
             if cls_ is None:
                 result = func_info.func_(*arg_values, **kwarg_values)
             else:

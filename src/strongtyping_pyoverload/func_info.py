@@ -12,7 +12,7 @@ class FuncInfo:
         self.func_name_ = func_.__name__
         self.params_ = params_
         self.cls_name_ = self.extract_class_name_from_func(func_)
-        self.pydantic_params_ = []
+        self.pydantic_params_: list[tuple[int, object]] = []
         self.pydantic_kwargs_ = {}
 
     @staticmethod
