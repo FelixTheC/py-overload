@@ -8,6 +8,7 @@ nav:
         - 'Class level': 'class_level.md'
         - 'Module level': 'module_level.md'
         - 'Defaults': 'defaults.md'
+        - 'Pydantic Integration': 'pydantic.md'
     - Examples:
         - 'Django': 'django.md'
         - 'Multiple __init__': 'multi_init.md'

@@ -30,43 +30,54 @@ Called with `tuple`
 ```
 
 ### Subclasses/Inheritance
-can overwrite an existing method __but__ these __must match the exact type definition__ of the __original method__
+The `overload` decorator respects the Method Resolution Order (MRO), allowing you to extend or override functionality in subclasses.
+
 ```python
 from strongtyping_pyoverload import overload
 
-
-class Example:
+class Base:
     @overload
-    def other_func(self):
-        return 0
+    def process(self, x: int):
+        return f"Base int: {x}"
 
+class Derived(Base):
     @overload
-    def other_func(self, a: int, b: int):
-        return (a * a) / b
+    def process(self, x: str):
+        return f"Derived str: {x}"
 
-
-class Other(Example):
-
+class SubDerived(Derived):
     @overload
-    def other_func(self, a):
-        return a ** a + a
+    def process(self, x: float):
+        return f"SubDerived float: {x}"
 
-    @overload
-    def other_func(self, a: int, b: int):  # the parameters and everything are exact the same
-        return ((a * a) / b) + a
+obj = SubDerived()
+print(obj.process(1))      # Base int: 1
+print(obj.process("hi"))   # Derived str: hi
+print(obj.process(1.5))    # SubDerived float: 1.5
 ```
-```pycon
->>> example = Example()
->>> example.other_func(2, 3)
-1.333333333333333
->>>
->>> other = Other()
->>> other.other_func()
-0
->>> other.other_func(2)
-6
->>> other.other_func(2, 3)
-3.333333333333333
+
+### Mixins
+You can also combine functionality from multiple mixin classes.
+
+```python
+class Mixin1:
+    @overload
+    def handle(self, x: int):
+        return f"Mixin1: {x}"
+
+class Mixin2:
+    @overload
+    def handle(self, x: str):
+        return f"Mixin2: {x}"
+
+class Combined(Mixin1, Mixin2):
+    @overload
+    def handle(self, x: float):
+        return f"Combined: {x}"
+
+obj = Combined()
+print(obj.handle(1))      # Mixin1: 1
+print(obj.handle("hi"))   # Mixin2: hi
 ```
 
 ### A type hint for each parameter??
@@ -130,7 +141,7 @@ class Other:
 ```
 
 ### No function matches
-when no function matches an `AttributError` will be raised
+When no function matches an `AttributeError` will be raised.
 ```python
 from strongtyping_pyoverload import overload
 
@@ -145,5 +156,5 @@ class Example:
 >>> example.other_func("Not", "Supported")
 Traceback (most recent call last):
 ...
-AttributeError: `Example` has no function which matches with your parameters `('Not', 'Supported')`
+AttributeError: `Example` has no function which matches with your parameters `('Not', 'Supported'), {}`
 ```
