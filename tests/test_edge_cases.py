@@ -1,5 +1,7 @@
 import pytest
 from strongtyping_pyoverload import overload
+from strongtyping_pyoverload.exception import InvalidOverloadException
+
 
 class Base:
     @overload
@@ -70,7 +72,7 @@ def test_keyword_only():
     obj = KeywordOnly()
     assert obj.find(name="Alice") == "name: Alice"
     assert obj.find(id=42) == "id: 42"
-    with pytest.raises(AttributeError):
+    with pytest.raises(InvalidOverloadException):
         obj.find("Alice")
 
 class MixedArgs:

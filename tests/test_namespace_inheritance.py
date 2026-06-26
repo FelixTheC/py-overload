@@ -1,5 +1,7 @@
 import pytest
 from strongtyping_pyoverload import overload
+from strongtyping_pyoverload.exception import InvalidOverloadException
+
 
 class Outer:
     class Inner:
@@ -35,7 +37,7 @@ def test_inheritance_cross_module_or_complex():
     # Testing if it can find the base class overload correctly without explicit redeclaration
     try:
         assert d.calc(1) == 2
-    except AttributeError:
+    except InvalidOverloadException:
         pytest.fail("Should have found Base.calc(int)")
 
 def test_qualname_consistency():
