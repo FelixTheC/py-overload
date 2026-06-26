@@ -1,0 +1,69 @@
+name: Close external PRs
+
+# This project is licensed under CC BY-ND 4.0 and does not accept pull requests
+# from anyone other than the listed maintainers (see CONTRIBUTING.md and
+# LICENSE.md). This workflow automatically comments on and closes any PR opened
+# by a non-maintainer account, including AI-driven bots.
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    # Edit this list to add additional maintainer GitHub usernames.
+    env:
+      MAINTAINERS: "FelixTheC"
+    steps:
+      - name: Close PRs from non-maintainers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const maintainers = (process.env.MAINTAINERS || "")
+              .split(/[\s,]+/)
+              .filter(Boolean)
+              .map(s => s.toLowerCase());
+            const author = (context.payload.pull_request.user.login || "").toLowerCase();
+
+            if (maintainers.includes(author)) {
+              core.info(`PR author '${author}' is a maintainer — leaving PR open.`);
+              return;
+            }
+
+            const body = [
+              "Thanks for your interest in this project!",
+              "",
+              "Unfortunately, **this repository does not accept pull requests**.",
+              "",
+              "`py-overload` is distributed under the",
+              "[Creative Commons Attribution-NoDerivatives 4.0 license](../blob/HEAD/LICENSE.md),",
+              "which prohibits direct modifications to the source code by anyone other than",
+              "the maintainers. This applies to human-authored PRs as well as PRs generated",
+              "by AI coding agents (Copilot, Codex, Cursor, Devin, Claude Code, Junie, etc.).",
+              "",
+              "If you found a bug or want to request a feature, please open an issue:",
+              "https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/issues",
+              "",
+              "See [`CONTRIBUTING.md`](../blob/HEAD/CONTRIBUTING.md) for details.",
+              "",
+              "This PR will now be closed automatically."
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body,
+            });
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              state: "closed",
+            });
