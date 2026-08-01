@@ -14,7 +14,7 @@ Markdown==3.10.2
 MarkupSafe==3.0.2
 mkdocs==1.6.1
 more-itertools==11.0.2
-nltk==3.9.4
+nltk==3.10.1
 packaging==24.1
 pluggy==1.6.0
 py==1.11.0
