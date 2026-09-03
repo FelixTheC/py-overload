@@ -45,3 +45,7 @@ class DataProcessor:
 - **Modern Python**: Full support for `typing.Annotated`, keyword-only parameters, and Python 3.13+.
 
 Detailed information can be found in the **User's guide** section.
+
+---
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/FEisenmenger)

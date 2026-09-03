@@ -13,6 +13,7 @@ updates:
       interval: "weekly"
       day: "sunday"
       time: "16:00"
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7       # Fallback, falls keine spezifische Regel greift
       semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
@@ -45,6 +46,7 @@ updates:
     directory: "/uv/helpers"
     multi-ecosystem-group: "uv-ecosystem"
     patterns: [ "*" ]
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7       # Fallback, falls keine spezifische Regel greift
       semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
@@ -59,6 +61,7 @@ updates:
     directory: "/uv/helpers"
     multi-ecosystem-group: "uv-ecosystem"
     patterns: [ "*" ]
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7       # Fallback, falls keine spezifische Regel greift
       semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
