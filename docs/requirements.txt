@@ -26,7 +26,7 @@ regex==2026.9.3
 requests==2.34.2
 six==1.17.0
 toml==0.10.2
-tornado==6.5.8
+tornado==6.5.9
 tqdm==4.70.0
 ujson==5.13.0
 urllib3==2.7.0
