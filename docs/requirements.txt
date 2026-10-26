@@ -1,5 +1,5 @@
 attrs==26.1.0
-certifi==2026.7.22
+certifi==2026.10.19
 chardet==7.6.0
 click==8.5.0
 codecov==2.1.13
@@ -26,8 +26,8 @@ regex==2026.9.3
 requests==2.34.2
 six==1.17.0
 toml==0.10.2
-tornado==6.5.8
+tornado==6.5.9
 tqdm==4.70.0
 ujson==5.13.0
-urllib3==2.7.0
+urllib3>=2.8.0
 wcwidth==0.8.3
