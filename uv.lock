@@ -304,55 +304,31 @@ wheels = [
 
 [[package]]
 name = "strongtyping"
-version = "3.13.10"
+version = "3.13.11"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version < '3.14'",
-]
 dependencies = [
-    { name = "librt", marker = "python_full_version < '3.14'" },
-    { name = "typing-extensions", marker = "python_full_version < '3.14'" },
-    { name = "ujson", marker = "python_full_version < '3.14'" },
+    { name = "librt" },
+    { name = "typing-extensions" },
+    { name = "ujson" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f4/ec/5f84762b5a05999d2f702327f339e013043440c69dccbb8c99b971701f56/strongtyping-3.13.10.tar.gz", hash = "sha256:dcec72ee6e42509c0fe502c27124ef6616eba1745b21c2dd4541bf3f0c23f925", size = 44143, upload-time = "2026-05-13T12:55:02.006Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/81/5cb1657519dc30877d4a532ebd0fa885499589cc96b04d59359c9be73485/strongtyping-3.13.11.tar.gz", hash = "sha256:3aa7fb0c2f3ed529d18b1628e728bbe51a871e1c0641e7a3fcf8962979b65316", size = 51448, upload-time = "2026-07-28T20:53:26.094Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/db/caa9c8a1ab99b7b04cb23cdb6870603bcf399e8f193afd729e7010de33c6/strongtyping-3.13.10-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:7a923840c3198b0ac8339f12ba05f64af4d81578ed06bbc9785d58072582edcc", size = 139381, upload-time = "2026-05-13T12:54:51.413Z" },
-    { url = "https://files.pythonhosted.org/packages/45/dc/681fa28a12ea7152f19cc2b9d3e7b8af3e6c2e41944e918458962c883524/strongtyping-3.13.10-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:23cb744adafb5499c301a02b2914e7da3ab984e256eb1a109670d6c23246ecc0", size = 134060, upload-time = "2026-05-13T12:54:52.743Z" },
-    { url = "https://files.pythonhosted.org/packages/4d/58/0767fe35d7fb40f487e89ed1cde21d51f107aa957bc478f93fc9cc19a2d1/strongtyping-3.13.10-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:68de8b94aa2449d99eb336628ed72f1b4bc5737ee28dc17147a81f95745c8873", size = 214710, upload-time = "2026-05-13T12:54:54.163Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/87/e097ea385dd340e6b6cd6cd8508e72ae83b25a225fb2d6a08ad74ef22e16/strongtyping-3.13.10-cp313-cp313-win_amd64.whl", hash = "sha256:485d214d2adfa6b68ea7401a0354a4370d280e414d211dbf4d91a2e233724b94", size = 89131, upload-time = "2026-05-13T12:54:55.618Z" },
-    { url = "https://files.pythonhosted.org/packages/af/57/b4ac73e591176fe2da680415610bd029cc7fc5b9d42346d01caad349e1f4/strongtyping-3.13.10-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:f8c9cf72857d22534f0a334f4b67538210fa03a88392a2da45d71b6bd266eb9f", size = 139215, upload-time = "2026-05-13T12:54:57.015Z" },
-    { url = "https://files.pythonhosted.org/packages/5b/43/5671e550fd5f869185bbfdb7c77a404d42ad0e771b971ed075d423eaa903/strongtyping-3.13.10-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:3c025448807d3b2b49ba96b3fe031bd90ec087d932fa976017ee304c456ff163", size = 134214, upload-time = "2026-05-13T12:54:58.171Z" },
-    { url = "https://files.pythonhosted.org/packages/bc/01/8e12e432da4e786b3020289cb2b9761e1e23f2041c0e1fee9034969405e1/strongtyping-3.13.10-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9158553d2888bc9f42420febf5bc5ec378110c9bde16a5ea4163d1685d520e81", size = 214617, upload-time = "2026-05-13T12:54:59.256Z" },
-    { url = "https://files.pythonhosted.org/packages/62/ea/4e81cc3e94639d3baef6bdba3ed43def95ca0d20689564369f22fed82fe7/strongtyping-3.13.10-cp314-cp314-win_amd64.whl", hash = "sha256:5721e0b2e064f8e8e0d084c190616f4685d478a039ca3178fb4561008065225d", size = 89796, upload-time = "2026-05-13T12:55:00.61Z" },
-]
-
-[[package]]
-name = "strongtyping"
-version = "3.14.3"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.14'",
-]
-dependencies = [
-    { name = "librt", marker = "python_full_version >= '3.14'" },
-    { name = "typing-extensions", marker = "python_full_version >= '3.14'" },
-    { name = "ujson", marker = "python_full_version >= '3.14'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/af/3f/fe786a51851cc2f37ccf56613bea197b56cc870a48d496548cecfc94c9ce/strongtyping-3.14.3.tar.gz", hash = "sha256:c8b7ab29e310dd42813c4b268cfae4974eb4f014f23436c7f7358aecfeb78bba", size = 44145, upload-time = "2026-05-13T12:58:42.721Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/17/c9/2ed2d9502fd74a9501669ab001e9e9f53cd1b26e05abc32b6e4c6bfaa835/strongtyping-3.14.3-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:2855d954745705d620962e6fcb3ec86a0b3f57f5c2334a2a2a769a96f67a0ba0", size = 139182, upload-time = "2026-05-13T12:58:37.677Z" },
-    { url = "https://files.pythonhosted.org/packages/bc/31/35fa7e11467edf201015e5011aa6ce171646f4c7c9c99ec537347439f608/strongtyping-3.14.3-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:6e13c40e0c54634cb01f2e032e446f80943ad94622079eaaf3c9d4cb8fd7729c", size = 134183, upload-time = "2026-05-13T12:58:38.914Z" },
-    { url = "https://files.pythonhosted.org/packages/5f/3f/c39e5c47f6b630f4fddb71a9126b7aed88f78d2cafc47e85e584205c6e53/strongtyping-3.14.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e253ae8814b47bb574d008a77d7c9fa3135fa3fd43100bc5811597270036ed43", size = 214587, upload-time = "2026-05-13T12:58:40.418Z" },
-    { url = "https://files.pythonhosted.org/packages/86/4f/14e9581d9a759bd85e8235db1220fbd9f237fda442b13d27a63038fe1724/strongtyping-3.14.3-cp314-cp314-win_amd64.whl", hash = "sha256:921736e94fe641ed87ba9cc5224c9679a8423a1a6c22b88f20197718a6f9051e", size = 89765, upload-time = "2026-05-13T12:58:41.683Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/3a/cca4227bd3ae507e55086a1c256c7a8d2b340549b495c9877bc14c0dde15/strongtyping-3.13.11-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:ae8b697907954376b1cb4bb408abd3358a9ebed61086883d61974091174388ef", size = 144142, upload-time = "2026-07-28T20:53:14.886Z" },
+    { url = "https://files.pythonhosted.org/packages/48/4a/12db5e02e3137932d0961e12e3ad18c0f6ae488c85c892020d731a5d0196/strongtyping-3.13.11-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:d9a806269c356b4b7c768e5c15caf4b276a658200193a95ffa1d9c76725da983", size = 140888, upload-time = "2026-07-28T20:53:16.409Z" },
+    { url = "https://files.pythonhosted.org/packages/98/b4/85d0d4f5ed0a0c225db282cb24e4c07ddaef60ca00dbc0752b0178307d28/strongtyping-3.13.11-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e35394f4b7c9bac3b0938794802e6526ac7c34f9a072eead08bf38ba4b21fe1e", size = 222073, upload-time = "2026-07-28T20:53:17.877Z" },
+    { url = "https://files.pythonhosted.org/packages/34/df/2dbcd309920e35e9941fe02201691320aa0b2c454c44ad1646dc4e59e723/strongtyping-3.13.11-cp313-cp313-win_amd64.whl", hash = "sha256:2dc1e5dc1a736636657b9a6adad27ff68e8aa9e401fba306a219efb40adb377b", size = 95846, upload-time = "2026-07-28T20:53:19.253Z" },
+    { url = "https://files.pythonhosted.org/packages/47/ec/566ff000cc80d8e247437d80d6ed183eb3c134ae44ddee7aa19125339568/strongtyping-3.13.11-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:c7927c74a89713951fb8a2c9157fcf29468305a46609653f84ba92c56f3d9774", size = 143611, upload-time = "2026-07-28T20:53:20.436Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/f0/58b634d74a8135c4d999ae4cdee51bb3d8dc6a2d74fc3a1af70c5ffbc03f/strongtyping-3.13.11-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:ef387bb22e00cc304d19ec401642da9a0a52a1a7d3437171401eb1d5c2c262c7", size = 141027, upload-time = "2026-07-28T20:53:21.886Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/92/de0959edfd5606429774e46dae6641f0e587a9cbafed21659d9050a58458/strongtyping-3.13.11-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:33442f7495be17c65308298fff6018d044c50bfb3a8ef30521bd9e8d7efba8d0", size = 222101, upload-time = "2026-07-28T20:53:23.343Z" },
+    { url = "https://files.pythonhosted.org/packages/02/ac/2efe8d09599555c5a390600d78a51ae1c4670ffaced02eca585dab9e2b31/strongtyping-3.13.11-cp314-cp314-win_amd64.whl", hash = "sha256:2180d9e113c67bcbb07d36735d774f585e86e08d80af93c404837616744510e0", size = 96496, upload-time = "2026-07-28T20:53:24.916Z" },
 ]
 
 [[package]]
 name = "strongtyping-pyoverload"
-version = "1.0.1"
+version = "1.0.2"
 source = { editable = "." }
 dependencies = [
-    { name = "strongtyping", version = "3.13.10", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.14'" },
-    { name = "strongtyping", version = "3.14.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
+    { name = "strongtyping" },
 ]
 
 [package.dev-dependencies]
@@ -364,7 +340,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "strongtyping", specifier = ">=3.13.10" }]
+requires-dist = [{ name = "strongtyping", specifier = "==3.13.11" }]
 
 [package.metadata.requires-dev]
 dev = [

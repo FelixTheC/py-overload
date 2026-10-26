@@ -15,19 +15,16 @@ updates:
       time: "16:00"
     open-pull-requests-limit: 5
     cooldown:
-      default-days: 7       # Fallback, falls keine spezifische Regel greift
-      semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
-      semver-minor-days: 14 # Warte 14 Tage bei Minor-Upgrades
-      semver-patch-days: 3  # Warte 3 Tage bei Patch-Upgrades (schnelle Bugfixes)
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 14
+      semver-patch-days: 3
     groups:
       common:
         patterns:
           - hashin
           - cython
           - flake8
-      # Keep the package managers themselves separate because they are higher risk
-      # and also higher visibility--ie, users generally want latest, so we don't
-      # want breakage in the `common` group to prevent updating package manager versions
       pip:
         patterns:
           - pip
@@ -45,29 +42,12 @@ updates:
   - package-ecosystem: "pip"
     directory: "/uv/helpers"
     multi-ecosystem-group: "uv-ecosystem"
-    patterns: [ "*" ]
     open-pull-requests-limit: 5
     cooldown:
-      default-days: 7       # Fallback, falls keine spezifische Regel greift
-      semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
-      semver-minor-days: 14 # Warte 14 Tage bei Minor-Upgrades
-      semver-patch-days: 3  # Warte 3 Tage bei Patch-Upgrades (schnelle Bugfixes)
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 14
+      semver-patch-days: 3
     ignore:
-      # Ignore major updates as most major updates will need manual intervention
       - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-
-  - package-ecosystem: "pip"
-    directory: "/uv/helpers"
-    multi-ecosystem-group: "uv-ecosystem"
-    patterns: [ "*" ]
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7       # Fallback, falls keine spezifische Regel greift
-      semver-major-days: 30 # Warte 30 Tage bei Major-Upgrades (warten auf Stabilität)
-      semver-minor-days: 14 # Warte 14 Tage bei Minor-Upgrades
-      semver-patch-days: 3  # Warte 3 Tage bei Patch-Upgrades (schnelle Bugfixes)
-    ignore:
-      # Ignore major updates as most major updates will need manual intervention
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+        update-types: ["version-update:semver-major"]
