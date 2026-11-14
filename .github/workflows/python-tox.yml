@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Set up Python 3.15
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.15'
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v7
         with:
@@ -28,4 +33,9 @@ jobs:
           pip install --upgrade pip
           pip install tox
       - name: Run tox
-        run: tox
+        run: tox -e py313,py314
+
+      - name: Run tox on Python 3.15 (experimental)
+        if: always()
+        continue-on-error: true
+        run: tox -e py315
