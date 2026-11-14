@@ -325,7 +325,7 @@ wheels = [
 
 [[package]]
 name = "strongtyping-pyoverload"
-version = "1.0.2"
+version = "1.0.4"
 source = { editable = "." }
 dependencies = [
     { name = "strongtyping" },
@@ -340,7 +340,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "strongtyping", specifier = "==3.13.11" }]
+requires-dist = [{ name = "strongtyping", specifier = ">=3.13" }]
 
 [package.metadata.requires-dev]
 dev = [
