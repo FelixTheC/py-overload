@@ -1,3 +1,8 @@
+## 1.0.4
+- Added experimental Python 3.15 tox testing in GitHub Actions; failures do not block CI.
+- Relaxed the runtime `strongtyping` dependency from `==3.13.11` to `>=3.13`.
+- Updated documentation dependencies and GitHub Actions versions.
+
 ## 0.4.4
 - Native Pydantic Integration: Automatically validate and dispatch based on Pydantic models.
 - Performance Optimization: Implemented optimized registry and lookup logic with caching.
